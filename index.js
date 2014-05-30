@@ -57,11 +57,16 @@ function dependenciesLookup(pkg, type) {
         var existing = pkg[type][name];
         var updated = pkg[type][name] = "~" + version;
 
-        console.log("Changed: ", name, "from", existing, "to", updated);
+        if (existing === updated) {
+          console.log("Kept: ", name, "at", existing);
+        }
+        else {
+          console.log("Changed: ", name, "from", existing, "to", updated);
+        }
         callback();
       });
     };
-  })
+  });
 }
 
 /**
