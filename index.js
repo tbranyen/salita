@@ -51,7 +51,7 @@ function dependenciesLookup(pkg, type) {
   }
 
   // Loop through and map the callbacks to the lookup latest.
-  return Object.keys(pkg[type]).map(function(name) {
+  return Object.keys(pkg[type] || []).map(function(name) {
     return function(callback) {
       lookupLatest(name, function(version) {
         var existing = pkg[type][name];
