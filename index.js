@@ -46,7 +46,7 @@ function salita(callback) {
  */
 function dependenciesLookup(pkg, type) {
   // See if any dependencies of this type exist.
-  if (pkg[type] && !Object.keys(pkg[type]).length) {
+  if (pkg[type] && !Object.keys(pkg[type]).length || []) {
     return [];
   }
 
@@ -55,9 +55,9 @@ function dependenciesLookup(pkg, type) {
     return function(callback) {
       lookupLatest(name, function(version) {
         var existing = pkg[type][name];
-        pkg[type][name] = "~" + version;
+        var updated = pkg[type][name] = "~" + version;
 
-        console.log("Changed: ", name, "from", existing, "to", version);
+        console.log("Changed: ", name, "from", existing, "to", updated);
         callback();
       });
     };
