@@ -1,0 +1,13 @@
+{
+  "name": "salita",
+  "version": "0.1.0",
+  "description": "Automatically upgrade all dependencies and devDependencies.",
+  "main": "index.js",
+  "dependencies": {
+    "async": "~0.9.0",
+    "npm": "~1.4.13"
+  },
+  "devDependencies": {},
+  "author": "Tim Branyen (@tbranyen)",
+  "license": "MIT"
+}

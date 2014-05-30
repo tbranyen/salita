@@ -1,0 +1,6 @@
+#!/usr/bin/env node
+var salita = require("../");
+
+salita(function() {
+  console.log("Completed upgrade.");
+});
