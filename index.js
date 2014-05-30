@@ -46,7 +46,7 @@ function salita(callback) {
  */
 function dependenciesLookup(pkg, type) {
   // See if any dependencies of this type exist.
-  if (pkg[type] && !Object.keys(pkg[type]).length || []) {
+  if (pkg[type] && !Object.keys(pkg[type] || []).length) {
     return [];
   }
 
