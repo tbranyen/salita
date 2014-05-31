@@ -1,12 +1,14 @@
 {
   "name": "salita",
   "bin": "bin/salita",
-  "version": "0.1.6",
+  "version": "0.1.7",
   "description": "Automatically upgrade all dependencies and devDependencies.",
   "main": "index.js",
   "dependencies": {
     "async": "~0.9.0",
-    "npm": "~1.4.13"
+    "chalk": "~0.4.0",
+    "npm": "~1.4.13",
+    "fjksdfjsdkflksdfj": "whatever"
   },
   "devDependencies": {},
   "author": "Tim Branyen (@tbranyen)",

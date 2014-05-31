@@ -1,6 +1,7 @@
 var fs = require("fs");
 var npm = require("npm");
 var async = require("async");
+var chalk = require("chalk");
 
 /**
  * Determine if NPM has been loaded or not.
@@ -55,14 +56,23 @@ function dependenciesLookup(pkg, type) {
     return function(callback) {
       lookupLatest(name, function(version) {
         var existing = pkg[type][name];
-        var updated = pkg[type][name] = "~" + version;
+        var updated = "~" + version;
 
-        if (existing === updated) {
-          console.log("Kept: ", name, "at", existing);
+        // If there is no version or the version is the latest.
+        if (version === null || existing === updated) {
+          console.log(
+            chalk.blue("Kept: "), name, "at", 
+            chalk.yellow(existing));
         }
         else {
-          console.log("Changed: ", name, "from", existing, "to", updated);
+          // Actually write to the package descriptor.
+          pkg[type][name] = updated;
+
+          console.log(
+            chalk.green("Changed: "), name, "from", 
+            chalk.yellow(existing), "to", chalk.yellow(updated));
         }
+
         callback();
       });
     };
@@ -90,7 +100,7 @@ function lookupLatest(name, callback) {
 
   // Call View directly to ensure the arguments actually work.
   view([name, "dist-tags"], true, function(err, desc) {
-    callback(Object.keys(desc)[0]);
+    callback(desc ? Object.keys(desc)[0] : null);
   });
 }
 
