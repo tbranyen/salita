@@ -1,12 +1,13 @@
 {
   "name": "salita",
   "bin": "bin/salita",
-  "version": "0.1.8",
+  "version": "0.1.9",
   "description": "Automatically upgrade all dependencies and devDependencies.",
   "main": "index.js",
   "dependencies": {
     "async": "~0.9.0",
     "chalk": "~0.4.0",
+    "cli-table": "~0.3.0",
     "npm": "~1.4.13"
   },
   "devDependencies": {},

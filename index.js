@@ -1,7 +1,28 @@
 var fs = require("fs");
 var npm = require("npm");
 var async = require("async");
+var Table = require("cli-table");
 var chalk = require("chalk");
+
+var table = new Table({
+  chars: {
+    "top": "",
+    "top-mid": "",
+    "top-left": "",
+    "top-right": "",
+    "bottom": "",
+    "bottom-mid": "",
+    "bottom-left": "",
+    "bottom-right": "",
+    "left": "",
+    "left-mid": "",
+    "mid": "",
+    "mid-mid": "",
+    "right": "",
+    "right-mid": "",
+    "middle": ""
+  }
+});
 
 /**
  * Determine if NPM has been loaded or not.
@@ -34,6 +55,8 @@ function salita(callback) {
 
   // Wait for all of them to resolve.
   async.parallel(callbacks, function() {
+    console.log(table.toString());
+
     // Write back the package.json.
     fs.writeFile("package.json", JSON.stringify(pkg, null, 2), callback);
   });
@@ -60,17 +83,17 @@ function dependenciesLookup(pkg, type) {
 
         // If there is no version or the version is the latest.
         if (version === null || existing === updated) {
-          console.log(
+          table.push([
             chalk.blue("Kept: "), name, "at", 
-            chalk.yellow(existing));
+            chalk.yellow(existing)]);
         }
         else {
           // Actually write to the package descriptor.
           pkg[type][name] = updated;
 
-          console.log(
+          table.push([
             chalk.green("Changed: "), name, "from", 
-            chalk.yellow(existing), "to", chalk.yellow(updated));
+            chalk.yellow(existing), "to", chalk.yellow(updated)]);
         }
 
         callback();
