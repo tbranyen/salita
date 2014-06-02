@@ -1,5 +1,7 @@
 var fs = require("fs");
+var path = require("path");
 var npm = require("npm");
+var jsonFile = require("json-file-plus");
 var async = require("async");
 var Table = require("cli-table");
 var chalk = require("chalk");
@@ -36,29 +38,32 @@ var isLoaded = false;
  * The main entry point.
  */
 function salita(callback) {
+  var filename = path.join(process.cwd(), 'package.json');
   // Package.json.
-  var pkg = JSON.parse(fs.readFileSync("package.json", "utf8"));
+  jsonFile(filename, function (err, pkg) {
+    if (err) { throw err; }
 
-  if (pkg) {
-    console.log("Found package.json.");
-  }
+    if (pkg) {
+      console.log("Found package.json.");
+    }
 
-  // Store all callbacks.
-  var callbacks = [];
-  var addCallbacks = callbacks.push.apply.bind(callbacks.push, callbacks);
+    // Store all callbacks.
+    var callbacks = [];
+    var addCallbacks = callbacks.push.apply.bind(callbacks.push, callbacks);
 
-  // Check all the dependencies.
-  addCallbacks(dependenciesLookup(pkg, "dependencies"));
+    // Check all the dependencies.
+    addCallbacks(dependenciesLookup(pkg.data, "dependencies"));
 
-  // Check all the devDependencies.
-  addCallbacks(dependenciesLookup(pkg, "devDependencies"));
+    // Check all the devDependencies.
+    addCallbacks(dependenciesLookup(pkg.data, "devDependencies"));
 
-  // Wait for all of them to resolve.
-  async.parallel(callbacks, function() {
-    console.log(table.toString());
+    // Wait for all of them to resolve.
+    async.parallel(callbacks, function() {
+      console.log(table.toString());
 
-    // Write back the package.json.
-    fs.writeFile("package.json", JSON.stringify(pkg, null, 2), callback);
+      // Write back the package.json.
+      pkg.save(callback);
+    });
   });
 }
 
