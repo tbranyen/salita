@@ -13,7 +13,7 @@
     "chalk": "~0.5.1",
     "cli-table": "~0.3.0",
     "npm": "~1.4.24",
-    "json-file-plus": "~0.2.3"
+    "json-file-plus": "~1.0.5"
   },
   "devDependencies": {},
   "author": "Tim Branyen (@tbranyen)",
