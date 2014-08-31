@@ -82,9 +82,9 @@ function dependenciesLookup(pkg, type) {
   // Loop through and map the callbacks to the lookup latest.
   return Object.keys(pkg[type] || []).map(function(name) {
     return function(callback) {
-      lookupLatest(name, function(version) {
+      lookupLatest(name, function(prefix, version) {
         var existing = pkg[type][name];
-        var updated = "~" + version;
+        var updated = prefix + version;
 
         // If there is no version or the version is the latest.
         if (version === null || existing === updated) {
@@ -125,10 +125,11 @@ function lookupLatest(name, callback) {
   // Need to require here, because NPM does all sorts of funky global
   // attaching.
   var view = require("npm/lib/view");
+  var prefix = npm.config.get('save-prefix');
 
   // Call View directly to ensure the arguments actually work.
   view([name, "dist-tags"], true, function(err, desc) {
-    callback(desc ? Object.keys(desc)[0] : null);
+    callback(prefix, desc ? Object.keys(desc)[0] : null);
   });
 }
 
