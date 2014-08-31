@@ -37,9 +37,9 @@ var isLoaded = false;
 /**
  * The main entry point.
  */
-function salita(callback) {
-  var filename = path.join(process.cwd(), 'package.json');
+function salita(dir, options, callback) {
   // Package.json.
+  var filename = path.join(dir, 'package.json');
   jsonFile(filename, function (err, pkg) {
     if (err) { throw err; }
 

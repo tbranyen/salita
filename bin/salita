@@ -1,6 +1,8 @@
 #!/usr/bin/env node
+
+var options = {};
 var salita = require("../");
 
-salita(function() {
+salita(process.cwd(), options, function() {
   console.log("Completed upgrade.");
 });
