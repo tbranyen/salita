@@ -61,7 +61,9 @@ function salita(dir, options, callback) {
     addCallbacks(dependenciesLookup(pkg.data, "devDependencies"));
 
     // Wait for all of them to resolve.
-    async.parallel(callbacks, function() {
+    async.parallel(callbacks, function(error, results) {
+      table.push.apply(table, results);
+
       console.log(table.toString());
 
       // Write back the package.json.
@@ -88,23 +90,25 @@ function dependenciesLookup(pkg, type) {
       lookupLatest(name, function(prefix, version) {
         var existing = pkg[type][name];
         var updated = prefix + version;
+        var result;
 
         // If there is no version or the version is the latest.
         if (version === null || existing === updated) {
-          table.push([
+          result = [
             chalk.blue("Kept: "), name, "at", 
-            chalk.yellow(existing)]);
-        }
-        else {
+            chalk.yellow(existing)
+          ];
+        } else {
           // Actually write to the package descriptor.
           pkg[type][name] = updated;
 
-          table.push([
+          result = [
             chalk.green("Changed: "), name, "from", 
-            chalk.yellow(existing), "to", chalk.yellow(updated)]);
+            chalk.yellow(existing), "to", chalk.yellow(updated)
+          ];
         }
 
-        callback();
+        callback(null, result);
       });
     };
   });
