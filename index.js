@@ -6,25 +6,28 @@ var async = require("async");
 var Table = require("cli-table");
 var chalk = require("chalk");
 
-var table = new Table({
-  chars: {
-    "top": "",
-    "top-mid": "",
-    "top-left": "",
-    "top-right": "",
-    "bottom": "",
-    "bottom-mid": "",
-    "bottom-left": "",
-    "bottom-right": "",
-    "left": "",
-    "left-mid": "",
-    "mid": "",
-    "mid-mid": "",
-    "right": "",
-    "right-mid": "",
-    "middle": ""
-  }
-});
+var getTable = function () {
+  return new Table({
+    chars: {
+      "top": "",
+      "top-mid": "",
+      "top-left": "",
+      "top-right": "",
+      "bottom": "",
+      "bottom-mid": "",
+      "bottom-left": "",
+      "bottom-right": "",
+      "left": "",
+      "left-mid": "",
+      "mid": "",
+      "mid-mid": "",
+      "right": "",
+      "right-mid": "",
+      "middle": ""
+    }
+  });
+};
+var table = getTable();
 
 /**
  * Determine if NPM has been loaded or not.
