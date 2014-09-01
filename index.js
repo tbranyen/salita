@@ -2,9 +2,9 @@ var fs = require("fs");
 var path = require("path");
 var npm = require("npm");
 var jsonFile = require("json-file-plus");
-var async = require("async");
 var Table = require("cli-table");
 var chalk = require("chalk");
+var Promise = require('promise');
 
 var getTable = function () {
   return new Table({
@@ -50,18 +50,17 @@ function salita(dir, options, callback) {
       console.log("Found package.json.");
     }
 
-    // Store all callbacks.
-    var callbacks = [];
-    var addCallbacks = callbacks.push.apply.bind(callbacks.push, callbacks);
+    var promises = [];
+    var addPromises = promises.push.apply.bind(promises.push, promises);
 
     // Check all the dependencies.
-    addCallbacks(dependenciesLookup(pkg.data, "dependencies"));
+    addPromises(dependenciesLookup(pkg.data, "dependencies"));
 
     // Check all the devDependencies.
-    addCallbacks(dependenciesLookup(pkg.data, "devDependencies"));
+    addPromises(dependenciesLookup(pkg.data, "devDependencies"));
 
     // Wait for all of them to resolve.
-    async.parallel(callbacks, function(error, results) {
+    Promise.all(promises).then(function (results) {
       table.push.apply(table, results);
 
       console.log(table.toString());
@@ -84,9 +83,9 @@ function dependenciesLookup(pkg, type) {
     return [];
   }
 
-  // Loop through and map the callbacks to the lookup latest.
+  // Loop through and map the "lookup latest" to promises.
   return Object.keys(pkg[type] || []).map(function(name) {
-    return function(callback) {
+    return new Promise(function (resolve, reject) {
       lookupLatest(name, function(prefix, version) {
         var existing = pkg[type][name];
         var updated = prefix + version;
@@ -108,9 +107,9 @@ function dependenciesLookup(pkg, type) {
           ];
         }
 
-        callback(null, result);
+        resolve(result);
       });
-    };
+    });
   });
 }
 
