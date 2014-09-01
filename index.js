@@ -27,7 +27,21 @@ var getTable = function () {
     }
   });
 };
-var table = getTable();
+
+var createResultTable = function (caption) {
+  return function (results) {
+    var table = getTable();
+    if (results.length > 0) {
+      table.push.apply(table, results);
+    } else {
+      table.push([chalk.gray('None found')]);
+    }
+    return [
+      chalk.green.underline(caption + ':'),
+      table
+    ];
+  };
+};
 
 /**
  * Determine if NPM has been loaded or not.
@@ -50,20 +64,21 @@ function salita(dir, options, callback) {
       console.log("Found package.json.");
     }
 
-    var promises = [];
-    var addPromises = promises.push.apply.bind(promises.push, promises);
-
     // Check all the dependencies.
-    addPromises(dependenciesLookup(pkg.data, "dependencies"));
+    var deps = Promise.all(dependenciesLookup(pkg.data, "dependencies"))
+      .then(createResultTable('Dependencies'));
 
     // Check all the devDependencies.
-    addPromises(dependenciesLookup(pkg.data, "devDependencies"));
+    var devDeps = Promise.all(dependenciesLookup(pkg.data, "devDependencies"))
+      .then(createResultTable('Development Dependencies'));
 
     // Wait for all of them to resolve.
-    Promise.all(promises).then(function (results) {
-      table.push.apply(table, results);
-
-      console.log(table.toString());
+    Promise.all([deps, devDeps]).then(function (depResults) {
+      depResults.forEach(function (results) {
+        results.map(String).forEach(function (result) {
+          console.log(result);
+        });
+      });
 
       // Write back the package.json.
       pkg.save(callback);
