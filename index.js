@@ -33,6 +33,10 @@ var createResultTable = function (caption) {
     var table = getTable();
     if (results.length > 0) {
       table.push.apply(table, results);
+      var sortByName = function (a, b) {
+        return a[1].localeCompare(b[1]);
+      };
+      table.sort(sortByName);
     } else {
       table.push([chalk.gray('None found')]);
     }
