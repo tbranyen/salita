@@ -12,7 +12,7 @@
     "chalk": "~0.5.1",
     "cli-table": "~0.3.0",
     "json-file-plus": "~1.0.7",
-    "npm": "~1.4.24",
+    "npm": "~1.4.25",
     "promise": "~5.0.0"
   },
   "devDependencies": {},
