@@ -22,8 +22,13 @@ salita
 
 You can prevent colors by running:
 
-``` bash
+```bash
 salita --no-color
+```
+
+You can get parseable JSON output (which disables colors as well) by running:
+``` bash
+salita --json
 ```
 
 ### Example ###

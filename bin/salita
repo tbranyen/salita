@@ -2,13 +2,16 @@
 
 var minimist = require('minimist');
 var options = minimist(process.argv, {
-  boolean: ['no-color'],
+  boolean: ['no-color', 'json'],
   default: {
-    'no-color': false
+    'no-color': false,
+    json: false
   }
 });
 var salita = require("../");
 
 salita(process.cwd(), options, function() {
-  console.log("Completed upgrade.");
+  if (!options.json) {
+    console.log("Completed upgrade.");
+  }
 });

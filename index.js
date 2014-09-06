@@ -5,6 +5,7 @@ var jsonFile = require("json-file-plus");
 var Table = require("cli-table");
 var chalk = require("chalk");
 var Promise = require('promise');
+var assign = require('object.assign');
 
 var getTable = function () {
   return new Table({
@@ -26,6 +27,14 @@ var getTable = function () {
       "middle": ""
     }
   });
+};
+
+var createResultJSON = function (key) {
+  return function (results) {
+    var obj = {};
+    obj[key] = results;
+    return obj;
+  };
 };
 
 var createResultTable = function (caption) {
@@ -78,30 +87,35 @@ var isLoaded = false;
  * The main entry point.
  */
 function salita(dir, options, callback) {
+  chalk.enabled = !options['no-color'] && !options.json;
   // Package.json.
   var filename = path.join(dir, 'package.json');
   jsonFile(filename, function (err, pkg) {
     if (err) { throw err; }
 
-    if (pkg) {
+    if (pkg && !options.json) {
       console.log("Found package.json.");
     }
 
     // Check all the dependencies.
     var deps = Promise.all(dependenciesLookup(pkg.data, "dependencies"))
-      .then(createResultTable('Dependencies'));
+      .then(options.json ? createResultJSON('dependencies') : createResultTable('Dependencies'));
 
     // Check all the devDependencies.
     var devDeps = Promise.all(dependenciesLookup(pkg.data, "devDependencies"))
-      .then(createResultTable('Development Dependencies'));
+      .then(options.json ? createResultJSON('devDependencies') : createResultTable('Development Dependencies'));
 
     // Wait for all of them to resolve.
     Promise.all([deps, devDeps]).then(function (depResults) {
-      depResults.forEach(function (results) {
-        results.map(String).forEach(function (result) {
-          console.log(result);
+      if (options.json) {
+        console.log(JSON.stringify(assign.apply(null, [{}].concat(depResults))));
+      } else {
+        depResults.forEach(function (results) {
+          results.map(String).forEach(function (result) {
+            console.log(result);
+          });
         });
-      });
+      }
 
       // Write back the package.json.
       pkg.save(callback);
