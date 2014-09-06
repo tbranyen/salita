@@ -139,8 +139,9 @@ function dependenciesLookup(pkg, type) {
     return [];
   }
 
+  var names = Object.keys(pkg[type] || []);
   // Loop through and map the "lookup latest" to promises.
-  return Object.keys(pkg[type] || []).map(function(name) {
+  var mapNameToLatest = function (name) {
     return new Promise(function (resolve, reject) {
       lookupLatest(name, function(prefix, version) {
         var existing = pkg[type][name];
@@ -162,7 +163,8 @@ function dependenciesLookup(pkg, type) {
         resolve(result);
       });
     });
-  });
+  };
+  return names.map(mapNameToLatest);
 }
 
 /**
