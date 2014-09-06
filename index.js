@@ -118,7 +118,11 @@ function salita(dir, options, callback) {
       }
 
       // Write back the package.json.
-      pkg.save(callback);
+      if (options['dry-run']) {
+        callback();
+      } else {
+        pkg.save(callback);
+      }
     });
   });
 }

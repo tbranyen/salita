@@ -23,6 +23,7 @@ salita
 ### Options ###
  - `--no-color`: prevents colorized output
  - `--json`: provides parseable JSON output (also disables colors)
+ - `--dry-run` / `-n`: prevents changes to `package.json`
 
 ### Example ###
 

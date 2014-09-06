@@ -2,16 +2,20 @@
 
 var minimist = require('minimist');
 var options = minimist(process.argv, {
-  boolean: ['no-color', 'json'],
+  boolean: ['no-color', 'json', 'dry-run'],
+  alias: {
+    'dry-run': 'n'
+  },
   default: {
     'no-color': false,
-    json: false
+    json: false,
+    'dry-run': false
   }
 });
 var salita = require("../");
 
 salita(process.cwd(), options, function() {
   if (!options.json) {
-    console.log("Completed upgrade.");
+    console.log(options['dry-run'] ? 'Completed upgrade report.' : 'Completed upgrade.');
   }
 });
