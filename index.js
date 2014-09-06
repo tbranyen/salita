@@ -32,7 +32,26 @@ var createResultTable = function (caption) {
   return function (results) {
     var table = getTable();
     if (results.length > 0) {
-      table.push.apply(table, results);
+      var tableRows = results.map(function (result) {
+        if (result.isChanged) {
+          return [
+            chalk.green('Changed: '),
+            result.name,
+            'from',
+            chalk.yellow(result.before),
+            'to',
+            chalk.yellow(result.after)
+          ];
+        } else {
+          return [
+            chalk.blue('Kept: '),
+            result.name,
+            'at',
+            chalk.yellow(result.before)
+          ];
+        }
+      });
+      table.push.apply(table, tableRows);
       var sortByName = function (a, b) {
         return a[1].localeCompare(b[1]);
       };
@@ -111,19 +130,15 @@ function dependenciesLookup(pkg, type) {
         var result;
 
         // If there is no version or the version is the latest.
-        if (version === null || existing === updated) {
-          result = [
-            chalk.blue("Kept: "), name, "at", 
-            chalk.yellow(existing)
-          ];
-        } else {
+        result = {
+          name: name,
+          before: existing,
+          after: updated,
+          isChanged: version !== null && existing !== updated
+        };
+        if (result.isChanged) {
           // Actually write to the package descriptor.
           pkg[type][name] = updated;
-
-          result = [
-            chalk.green("Changed: "), name, "from", 
-            chalk.yellow(existing), "to", chalk.yellow(updated)
-          ];
         }
 
         resolve(result);
