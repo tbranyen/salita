@@ -1,6 +1,12 @@
 #!/usr/bin/env node
 
-var options = {};
+var minimist = require('minimist');
+var options = minimist(process.argv, {
+  boolean: ['no-color'],
+  default: {
+    'no-color': false
+  }
+});
 var salita = require("../");
 
 salita(process.cwd(), options, function() {
