@@ -20,16 +20,9 @@ cd my_project
 salita
 ```
 
-You can prevent colors by running:
-
-```bash
-salita --no-color
-```
-
-You can get parseable JSON output (which disables colors as well) by running:
-``` bash
-salita --json
-```
+### Options ###
+ - `--no-color`: prevents colorized output
+ - `--json`: provides parseable JSON output (also disables colors)
 
 ### Example ###
 
