@@ -98,11 +98,11 @@ function salita(dir, options, callback) {
     }
 
     // Check all the dependencies.
-    var deps = Promise.all(dependenciesLookup(pkg.data, "dependencies"))
+    var deps = Promise.all(dependenciesLookup(pkg.data, 'dependencies', options['ignore-stars']))
       .then(options.json ? createResultJSON('dependencies') : createResultTable('Dependencies'));
 
     // Check all the devDependencies.
-    var devDeps = Promise.all(dependenciesLookup(pkg.data, "devDependencies"))
+    var devDeps = Promise.all(dependenciesLookup(pkg.data, 'devDependencies', options['ignore-stars']))
       .then(options.json ? createResultJSON('devDependencies') : createResultTable('Development Dependencies'));
 
     // Wait for all of them to resolve.
@@ -133,7 +133,7 @@ function salita(dir, options, callback) {
  * @param type
  * @return
  */
-function dependenciesLookup(pkg, type) {
+function dependenciesLookup(pkg, type, ignoreStars) {
   // See if any dependencies of this type exist.
   if (pkg[type] && !Object.keys(pkg[type] || []).length) {
     return [];
@@ -141,6 +141,25 @@ function dependenciesLookup(pkg, type) {
 
   var names = Object.keys(pkg[type] || []);
   // Loop through and map the "lookup latest" to promises.
+  var names = Object.keys(pkg[type] || []);
+  var stars = [];
+  if (ignoreStars) {
+    names = names.filter(function (name) {
+      var version = pkg[type][name];
+      var isStar = version === '*';
+      if (isStar) {
+        stars.push(new Promise(function (resolve, reject) {
+          resolve({
+            name: name,
+            before: version,
+            after: version,
+            isChanged: false
+          });
+        }));
+      }
+      return !isStar;
+    });
+  }
   var mapNameToLatest = function (name) {
     return new Promise(function (resolve, reject) {
       lookupLatest(name, function(prefix, version) {
@@ -164,7 +183,7 @@ function dependenciesLookup(pkg, type) {
       });
     });
   };
-  return names.map(mapNameToLatest);
+  return names.map(mapNameToLatest).concat(stars);
 }
 
 /**
