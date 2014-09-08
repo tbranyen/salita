@@ -8,6 +8,10 @@
     "type": "git",
     "url": "git://github.com/tbranyen/salita.git"
   },
+  "contributors": [
+    "Tim Branyen (https://github.com/tbranyen)",
+    "Jordan Harband <ljharb@gmail.com> (https://github.com/ljharb/)"
+  ],
   "dependencies": {
     "chalk": "~0.5.1",
     "cli-table": "~0.3.0",
