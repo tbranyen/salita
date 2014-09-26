@@ -15,7 +15,7 @@
   "dependencies": {
     "chalk": "~0.5.1",
     "cli-table": "~0.3.0",
-    "json-file-plus": "~1.0.7",
+    "json-file-plus": "~2.0.0",
     "npm": "~2.0.0",
     "minimist": "~1.1.0",
     "object.assign": "~1.0.1",
