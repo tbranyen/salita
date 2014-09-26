@@ -90,9 +90,7 @@ function salita(dir, options, callback) {
   chalk.enabled = !options['no-color'] && !options.json;
   // Package.json.
   var filename = path.join(dir, 'package.json');
-  jsonFile(filename, function (err, pkg) {
-    if (err) { throw err; }
-
+  jsonFile(filename).then(function (pkg) {
     if (pkg && !options.json) {
       console.log("Found package.json.");
     }
@@ -124,7 +122,7 @@ function salita(dir, options, callback) {
         pkg.save(callback);
       }
     });
-  });
+  }).done();
 }
 
 /**
