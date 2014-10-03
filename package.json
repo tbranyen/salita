@@ -21,7 +21,9 @@
     "object.assign": "~1.0.1",
     "promise": "~6.0.0"
   },
-  "devDependencies": {},
+  "devDependencies": {
+    "jscs": "~1.6.2"
+  },
   "author": "Tim Branyen (@tbranyen)",
   "license": "MIT"
 }
