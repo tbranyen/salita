@@ -1,30 +1,30 @@
-var fs = require("fs");
-var path = require("path");
-var npm = require("npm");
-var jsonFile = require("json-file-plus");
-var Table = require("cli-table");
-var chalk = require("chalk");
+var fs = require('fs');
+var path = require('path');
+var npm = require('npm');
+var jsonFile = require('json-file-plus');
+var Table = require('cli-table');
+var chalk = require('chalk');
 var Promise = require('promise');
 var assign = require('object.assign');
 
 var getTable = function () {
   return new Table({
     chars: {
-      "top": "",
-      "top-mid": "",
-      "top-left": "",
-      "top-right": "",
-      "bottom": "",
-      "bottom-mid": "",
-      "bottom-left": "",
-      "bottom-right": "",
-      "left": "",
-      "left-mid": "",
-      "mid": "",
-      "mid-mid": "",
-      "right": "",
-      "right-mid": "",
-      "middle": ""
+      'top': '',
+      'top-mid': '',
+      'top-left': '',
+      'top-right': '',
+      'bottom': '',
+      'bottom-mid': '',
+      'bottom-left': '',
+      'bottom-right': '',
+      'left': '',
+      'left-mid': '',
+      'mid': '',
+      'mid-mid': '',
+      'right': '',
+      'right-mid': '',
+      'middle': ''
     }
   });
 };
@@ -92,7 +92,7 @@ function salita(dir, options, callback) {
   var filename = path.join(dir, 'package.json');
   jsonFile(filename).then(function (pkg) {
     if (pkg && !options.json) {
-      console.log("Found package.json.");
+      console.log('Found package.json.');
     }
 
     // Check all the dependencies.
@@ -201,11 +201,11 @@ function lookupLatest(name, callback) {
 
   // Need to require here, because NPM does all sorts of funky global
   // attaching.
-  var view = require("npm/lib/view");
+  var view = require('npm/lib/view');
   var prefix = npm.config.get('save-prefix');
 
   // Call View directly to ensure the arguments actually work.
-  view([name, "dist-tags"], true, function (err, desc) {
+  view([name, 'dist-tags'], true, function (err, desc) {
     callback(prefix, desc ? Object.keys(desc)[0] : null);
   });
 }

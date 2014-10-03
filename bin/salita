@@ -13,7 +13,7 @@ var options = minimist(process.argv, {
     'ignore-stars': false
   }
 });
-var salita = require("../");
+var salita = require('../');
 
 salita(process.cwd(), options, function () {
   if (!options.json) {
