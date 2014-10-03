@@ -4,6 +4,9 @@
   "version": "0.4.3",
   "description": "Automatically upgrade all dependencies and devDependencies.",
   "main": "index.js",
+  "scripts": {
+    "lint": "jscs *.js bin/salita"
+  },
   "repository": {
     "type": "git",
     "url": "git://github.com/tbranyen/salita.git"
