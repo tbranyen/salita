@@ -15,7 +15,7 @@ var options = minimist(process.argv, {
 });
 var salita = require("../");
 
-salita(process.cwd(), options, function() {
+salita(process.cwd(), options, function () {
   if (!options.json) {
     console.log(options['dry-run'] ? 'Completed upgrade report.' : 'Completed upgrade.');
   }

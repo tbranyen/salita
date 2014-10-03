@@ -160,7 +160,7 @@ function dependenciesLookup(pkg, type, ignoreStars) {
   }
   var mapNameToLatest = function (name) {
     return new Promise(function (resolve, reject) {
-      lookupLatest(name, function(prefix, version) {
+      lookupLatest(name, function (prefix, version) {
         var existing = pkg[type][name];
         var updated = prefix + version;
         var result;
@@ -193,7 +193,7 @@ function dependenciesLookup(pkg, type, ignoreStars) {
 function lookupLatest(name, callback) {
   if (!isLoaded) {
     // Wait for NPM to be loaded and then ensure it's never loaded again, ever.
-    return npm.load({}, function() {
+    return npm.load({}, function () {
       isLoaded = true;
       lookupLatest(name, callback);
     });
@@ -205,7 +205,7 @@ function lookupLatest(name, callback) {
   var prefix = npm.config.get('save-prefix');
 
   // Call View directly to ensure the arguments actually work.
-  view([name, "dist-tags"], true, function(err, desc) {
+  view([name, "dist-tags"], true, function (err, desc) {
     callback(prefix, desc ? Object.keys(desc)[0] : null);
   });
 }
