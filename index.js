@@ -76,14 +76,6 @@ var createResultTable = function (caption) {
 };
 
 /**
- * Determine if NPM has been loaded or not.
- *
- * @private
- * @type {boolean}
- */
-var isLoaded = false;
-
-/**
  * The main entry point.
  */
 function salita(dir, options, callback) {
@@ -91,6 +83,8 @@ function salita(dir, options, callback) {
   // Package.json.
   var filename = path.join(dir, 'package.json');
   jsonFile(filename).then(function (pkg) {
+    return loadNPM().then(function () { return pkg; });
+  }).then(function (pkg) {
     if (pkg && !options.json) {
       console.log('Found package.json.');
     }
@@ -184,6 +178,18 @@ function dependenciesLookup(pkg, type, ignoreStars) {
   return names.map(mapNameToLatest).concat(stars);
 }
 
+function loadNPM() {
+  return new Promise(function (resolve, reject) {
+    npm.load({}, function (err, result) {
+      if (err) {
+        reject(err);
+      } else {
+        resolve(result);
+      }
+    });
+  });
+}
+
 /**
  * Given a package name, lookup the latest valid semantic tag.
  *
@@ -191,14 +197,6 @@ function dependenciesLookup(pkg, type, ignoreStars) {
  * @param {Function} callback - A function to call with the version.
  */
 function lookupLatest(name, callback) {
-  if (!isLoaded) {
-    // Wait for NPM to be loaded and then ensure it's never loaded again, ever.
-    return npm.load({}, function () {
-      isLoaded = true;
-      lookupLatest(name, callback);
-    });
-  }
-
   // Need to require here, because NPM does all sorts of funky global
   // attaching.
   var view = require('npm/lib/view');
