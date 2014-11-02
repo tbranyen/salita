@@ -6,6 +6,7 @@ var Table = require('cli-table');
 var chalk = require('chalk');
 var Promise = require('promise');
 var assign = require('object.assign');
+var semver = require('semver');
 
 var getTable = function () {
   return new Table({
@@ -90,11 +91,11 @@ function salita(dir, options, callback) {
     }
 
     // Check all the dependencies.
-    var deps = Promise.all(dependenciesLookup(pkg.data, 'dependencies', options['ignore-stars']))
+    var deps = Promise.all(dependenciesLookup(pkg.data, 'dependencies', options['ignore-stars'], options['ignore-pegged']))
       .then(options.json ? createResultJSON('dependencies') : createResultTable('Dependencies'));
 
     // Check all the devDependencies.
-    var devDeps = Promise.all(dependenciesLookup(pkg.data, 'devDependencies', options['ignore-stars']))
+    var devDeps = Promise.all(dependenciesLookup(pkg.data, 'devDependencies', options['ignore-stars'], options['ignore-pegged']))
       .then(options.json ? createResultJSON('devDependencies') : createResultTable('Development Dependencies'));
 
     // Wait for all of them to resolve.
@@ -125,7 +126,7 @@ function salita(dir, options, callback) {
  * @param type
  * @return
  */
-function dependenciesLookup(pkg, type, ignoreStars) {
+function dependenciesLookup(pkg, type, ignoreStars, ignorePegged) {
   // See if any dependencies of this type exist.
   if (pkg[type] && !Object.keys(pkg[type] || []).length) {
     return [];
@@ -143,14 +144,23 @@ function dependenciesLookup(pkg, type, ignoreStars) {
       isChanged: false
     }));
   };
-  if (ignoreStars) {
+  if (ignoreStars || ignorePegged) {
     names = names.filter(function (name) {
       var version = pkg[type][name];
+
       var isStar = version === '*';
-      if (isStar) {
-        addUntouched(name, version);
+      if (ignoreStars && isStar) {
+        return addUntouched(name, version);
       }
-      return !isStar;
+
+      var range = semver.Range(version);
+      var isPegged = range.set.every(function (comparators) {
+        return comparators.length === 1 && String(comparators[0].operator || '') === '';
+      });
+      if (ignorePegged && isPegged) {
+        return addUntouched(name, version);
+      }
+      return true;
     });
   }
   var mapNameToLatest = function (name) {

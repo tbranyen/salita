@@ -25,6 +25,7 @@ salita
  - `--json`: provides parseable JSON output (also disables colors)
  - `--dry-run` / `-n`: prevents changes to `package.json`
  - `--ignore-stars`: ignore updates to packages that are set to "*"
+ - `--ignore-pegged`: ignore updates to packages that are pegged to a single version, rather than a range
 
 ### Example ###
 

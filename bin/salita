@@ -2,7 +2,13 @@
 
 var minimist = require('minimist');
 var options = minimist(process.argv, {
-  boolean: ['no-color', 'json', 'dry-run', 'ignore-stars'],
+  boolean: [
+    'no-color',
+    'json',
+    'dry-run',
+    'ignore-stars',
+    'ignore-pegged'
+  ],
   alias: {
     'dry-run': 'n'
   },
@@ -10,7 +16,8 @@ var options = minimist(process.argv, {
     'no-color': false,
     json: false,
     'dry-run': false,
-    'ignore-stars': false
+    'ignore-stars': false,
+    'ignore-pegged': false
   }
 });
 var salita = require('../');
