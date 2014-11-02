@@ -134,20 +134,21 @@ function dependenciesLookup(pkg, type, ignoreStars) {
   var names = Object.keys(pkg[type] || []);
   // Loop through and map the "lookup latest" to promises.
   var names = Object.keys(pkg[type] || []);
-  var stars = [];
+  var untouched = [];
+  var addUntouched = function (name, version) {
+    untouched.push(Promise.resolve({
+	  name: name,
+      before: version,
+      after: version,
+      isChanged: false
+    }));
+  };
   if (ignoreStars) {
     names = names.filter(function (name) {
       var version = pkg[type][name];
       var isStar = version === '*';
       if (isStar) {
-        stars.push(new Promise(function (resolve, reject) {
-          resolve({
-            name: name,
-            before: version,
-            after: version,
-            isChanged: false
-          });
-        }));
+        addUntouched(name, version);
       }
       return !isStar;
     });
@@ -175,7 +176,7 @@ function dependenciesLookup(pkg, type, ignoreStars) {
       });
     });
   };
-  return names.map(mapNameToLatest).concat(stars);
+  return names.map(mapNameToLatest).concat(untouched);
 }
 
 function loadNPM() {
