@@ -28,8 +28,7 @@ salita(process.cwd(), options, function (counts) {
     var total = sums[0];
     var changed = sums[1];
     if (!options.json) {
-      console.log('\n' + changed + ' updated out of ' + total + ' total dependencies.' + '\n');
-      console.log(options['dry-run'] ? 'Completed upgrade report.' : 'Completed upgrade.');
+      console.error('\n' + changed + ' updated out of ' + total + ' total dependencies.');
     }
   });
 });
