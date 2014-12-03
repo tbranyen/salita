@@ -7,7 +7,8 @@ var options = minimist(process.argv, {
     'json',
     'dry-run',
     'ignore-stars',
-    'ignore-pegged'
+    'ignore-pegged',
+    'check',
   ],
   alias: {
     'dry-run': 'n'
@@ -17,9 +18,11 @@ var options = minimist(process.argv, {
     json: false,
     'dry-run': false,
     'ignore-stars': false,
-    'ignore-pegged': false
+    'ignore-pegged': false,
+    'check': false
   }
 });
+if (options.check) { options['dry-run'] = true; }
 var salita = require('../');
 
 salita(process.cwd(), options, function (counts) {
@@ -30,5 +33,6 @@ salita(process.cwd(), options, function (counts) {
     if (!options.json) {
       console.error('\n' + changed + ' updated out of ' + total + ' total dependencies.');
     }
+    if (options.check) { process.exit(changed); }
   });
 });

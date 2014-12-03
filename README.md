@@ -26,6 +26,7 @@ salita
  - `--dry-run` / `-n`: prevents changes to `package.json`
  - `--ignore-stars`: ignore updates to packages that are set to "*"
  - `--ignore-pegged`: ignore updates to packages that are pegged to a single version, rather than a range
+ - `--check`: implies "dry-run"; and returns with an exit code matching the number of updated dependencies.
 
 ### Example ###
 
