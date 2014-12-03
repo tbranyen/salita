@@ -101,7 +101,7 @@ function salita(dir, options, callback) {
     // Wait for all of them to resolve.
     Promise.all([deps, devDeps]).then(function (depResults) {
       if (options.json) {
-        console.log(JSON.stringify(assign.apply(null, [{}].concat(depResults))));
+        console.log(JSON.stringify(assign.apply(null, [{}].concat(depResults)), null, 2));
       } else {
         depResults.forEach(function (results) {
           results.map(String).forEach(function (result) {
