@@ -91,12 +91,12 @@ function salita(dir, options, callback) {
     }
 
     // Check all the dependencies.
-    var deps = Promise.all(dependenciesLookup(pkg.data, 'dependencies', options['ignore-stars'], options['ignore-pegged']))
-      .then(options.json ? createResultJSON('dependencies') : createResultTable('Dependencies'));
+    var depLookups = Promise.all(dependenciesLookup(pkg.data, 'dependencies', options['ignore-stars'], options['ignore-pegged']))
+    var deps = depLookups.then(options.json ? createResultJSON('dependencies') : createResultTable('Dependencies'));
 
     // Check all the devDependencies.
-    var devDeps = Promise.all(dependenciesLookup(pkg.data, 'devDependencies', options['ignore-stars'], options['ignore-pegged']))
-      .then(options.json ? createResultJSON('devDependencies') : createResultTable('Development Dependencies'));
+    var devDepLookups = Promise.all(dependenciesLookup(pkg.data, 'devDependencies', options['ignore-stars'], options['ignore-pegged']))
+    var devDeps = devDepLookups.then(options.json ? createResultJSON('devDependencies') : createResultTable('Development Dependencies'));
 
     // Wait for all of them to resolve.
     Promise.all([deps, devDeps]).then(function (depResults) {
@@ -110,11 +110,19 @@ function salita(dir, options, callback) {
         });
       }
 
+      var getDepCounts = function (results) {
+        var totalDeps = results.length;
+        var changedDeps = results.filter(function (result) { return result.isChanged; }).length;
+        return [totalDeps, changedDeps];
+      };
+      var mapThen = function (a, b) { return function (promise) { return promise.then(a, b); }; };
+      var counts = Promise.all([depLookups, devDepLookups].map(mapThen(getDepCounts)));
+
       // Write back the package.json.
       if (options['dry-run']) {
-        callback();
+        callback(counts);
       } else {
-        pkg.save(callback);
+        pkg.save(callback.bind(null, counts));
       }
     });
   }).done();

@@ -22,8 +22,14 @@ var options = minimist(process.argv, {
 });
 var salita = require('../');
 
-salita(process.cwd(), options, function () {
-  if (!options.json) {
-    console.log(options['dry-run'] ? 'Completed upgrade report.' : 'Completed upgrade.');
-  }
+salita(process.cwd(), options, function (counts) {
+  counts.then(function (counts) {
+    var sums = counts.reduce(function (sums, category) { return [sums[0] + category[0], sums[1] + category[1]]; }, [0, 0]);
+    var total = sums[0];
+    var changed = sums[1];
+    if (!options.json) {
+      console.log('\n' + changed + ' updated out of ' + total + ' total dependencies.' + '\n');
+      console.log(options['dry-run'] ? 'Completed upgrade report.' : 'Completed upgrade.');
+    }
+  });
 });
