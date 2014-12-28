@@ -173,7 +173,8 @@ function dependenciesLookup(pkg, type, ignoreStars, ignorePegged) {
   }
   var mapNameToLatest = function (name) {
     return new Promise(function (resolve, reject) {
-      lookupLatest(name, function (prefix, version) {
+      lookupDistTags(name, function (prefix, distTags) {
+        var version = distTags.latest;
         var existing = pkg[type][name];
         var updated = prefix + version;
         var result;
@@ -210,12 +211,12 @@ function loadNPM() {
 }
 
 /**
- * Given a package name, lookup the latest valid semantic tag.
+ * Given a package name, lookup the semantic tags.
  *
  * @param {string} name - The module name.
- * @param {Function} callback - A function to call with the version.
+ * @param {Function} callback - A function to call with the dist tags.
  */
-function lookupLatest(name, callback) {
+function lookupDistTags(name, callback) {
   // Need to require here, because NPM does all sorts of funky global
   // attaching.
   var view = require('npm/lib/view');
@@ -223,7 +224,13 @@ function lookupLatest(name, callback) {
 
   // Call View directly to ensure the arguments actually work.
   view([name, 'dist-tags'], true, function (err, desc) {
-    callback(prefix, desc ? Object.keys(desc)[0] : null);
+    if (err) { throw new Error(err); }
+    var latest = Object.keys(desc);
+    if (latest.length !== 1) {
+      throw new Error('expected 1 version key, got: ' + latest);
+    }
+    var tags = desc[latest]['dist-tags'];
+    callback(prefix, tags);
   });
 }
 
