@@ -52,6 +52,15 @@ var createResultTable = function (caption) {
             'to',
             chalk.yellow(result.after)
           ];
+        } else if (!result.isUpdateable && !result.isStar && !result.isPegged) {
+          return [
+            chalk.red('Requested range not satisfied by: '),
+            result.name,
+            'from',
+            chalk.yellow(result.before),
+            'to',
+            chalk.yellow(result.after)
+          ];
         } else {
           return [
             chalk.blue('Kept: '),
@@ -144,13 +153,14 @@ function dependenciesLookup(pkg, type, ignoreStars, ignorePegged) {
   // Loop through and map the "lookup latest" to promises.
   var names = Object.keys(pkg[type] || []);
   var untouched = [];
-  var addUntouched = function (name, version) {
-    untouched.push(Promise.resolve({
+  var addUntouched = function (name, version, flags) {
+    untouched.push(Promise.resolve(assign({
 	  name: name,
       before: version,
       after: version,
-      isChanged: false
-    }));
+      isChanged: false,
+      isUpdateable: false
+    }, flags)));
   };
   if (ignoreStars || ignorePegged) {
     names = names.filter(function (name) {
@@ -158,7 +168,7 @@ function dependenciesLookup(pkg, type, ignoreStars, ignorePegged) {
 
       var isStar = version === '*';
       if (ignoreStars && isStar) {
-        return addUntouched(name, version);
+        return addUntouched(name, version, { isStar: true });
       }
 
       var range = semver.Range(version);
@@ -166,7 +176,7 @@ function dependenciesLookup(pkg, type, ignoreStars, ignorePegged) {
         return comparators.length === 1 && String(comparators[0].operator || '') === '';
       });
       if (ignorePegged && isPegged) {
-        return addUntouched(name, version);
+        return addUntouched(name, version, { isPegged: true });
       }
       return true;
     });
@@ -176,6 +186,7 @@ function dependenciesLookup(pkg, type, ignoreStars, ignorePegged) {
       lookupDistTags(name, function (prefix, distTags) {
         var version = distTags.latest;
         var existing = pkg[type][name];
+        var isUpdateable = !semver.ltr(version, semver.Range(existing))
         var updated = prefix + version;
         var result;
 
@@ -184,7 +195,8 @@ function dependenciesLookup(pkg, type, ignoreStars, ignorePegged) {
           name: name,
           before: existing,
           after: updated,
-          isChanged: version !== null && existing !== updated
+          isChanged: version !== null && isUpdateable && existing !== updated,
+          isUpdateable: isUpdateable
         };
         if (result.isChanged) {
           // Actually write to the package descriptor.
