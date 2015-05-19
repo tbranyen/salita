@@ -100,11 +100,11 @@ function salita(dir, options, callback) {
     }
 
     // Check all the dependencies.
-    var depLookups = Promise.all(dependenciesLookup(pkg.data, 'dependencies', options['ignore-stars'], options['ignore-pegged']))
+    var depLookups = Promise.all(dependenciesLookup(pkg.data, 'dependencies', options['ignore-stars'], options['ignore-pegged']));
     var deps = depLookups.then(options.json ? createResultJSON('dependencies') : createResultTable('Dependencies'));
 
     // Check all the devDependencies.
-    var devDepLookups = Promise.all(dependenciesLookup(pkg.data, 'devDependencies', options['ignore-stars'], options['ignore-pegged']))
+    var devDepLookups = Promise.all(dependenciesLookup(pkg.data, 'devDependencies', options['ignore-stars'], options['ignore-pegged']));
     var devDeps = devDepLookups.then(options.json ? createResultJSON('devDependencies') : createResultTable('Development Dependencies'));
 
     // Wait for all of them to resolve.
@@ -186,7 +186,7 @@ function dependenciesLookup(pkg, type, ignoreStars, ignorePegged) {
       lookupDistTags(name, function (prefix, distTags) {
         var version = distTags.latest;
         var existing = pkg[type][name];
-        var isUpdateable = !semver.ltr(version, semver.Range(existing))
+        var isUpdateable = !semver.ltr(version, semver.Range(existing));
         var updated = prefix + version;
         var result;
 

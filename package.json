@@ -26,7 +26,7 @@
     "semver": "~4.2.0"
   },
   "devDependencies": {
-    "jscs": "~1.11.0"
+    "jscs": "^1.13.1"
   },
   "author": "Tim Branyen (@tbranyen)",
   "license": "MIT"

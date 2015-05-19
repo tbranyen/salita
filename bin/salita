@@ -8,7 +8,7 @@ var options = minimist(process.argv, {
     'dry-run',
     'ignore-stars',
     'ignore-pegged',
-    'check',
+    'check'
   ],
   alias: {
     'dry-run': 'n'
@@ -19,7 +19,7 @@ var options = minimist(process.argv, {
     'dry-run': false,
     'ignore-stars': false,
     'ignore-pegged': false,
-    'check': false
+    check: false
   }
 });
 if (options.check) { options['dry-run'] = true; }
