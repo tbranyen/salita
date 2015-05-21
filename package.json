@@ -21,7 +21,7 @@
     "json-file-plus": "^3.0.0",
     "npm": "^2.10.1",
     "minimist": "^1.1.1",
-    "object.assign": "^2.0.1",
+    "object.assign": "^3.0.0",
     "promise": "^7.0.1",
     "semver": "^4.3.4"
   },
