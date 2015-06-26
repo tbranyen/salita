@@ -186,7 +186,11 @@ function dependenciesLookup(pkg, type, ignoreStars, ignorePegged) {
       lookupDistTags(name, function (prefix, distTags) {
         var version = distTags.latest;
         var existing = pkg[type][name];
-        var isUpdateable = !semver.ltr(version, semver.Range(existing));
+        var isUpdateable = false;
+        try {
+          var range = semver.Range(existing);
+          isUpdateable = !semver.ltr(version, range);
+        } catch (e) {}
         var updated = prefix + version;
         var result;
 
