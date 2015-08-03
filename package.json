@@ -20,13 +20,13 @@
     "cli-table": "^0.3.1",
     "json-file-plus": "^3.0.0",
     "npm": "v3.x-next",
-    "yargs": "^3.14.0",
+    "yargs": "^3.17.1",
     "object.assign": "^3.0.1",
     "promise": "^7.0.3",
-    "semver": "^4.3.6"
+    "semver": "^5.0.1"
   },
   "devDependencies": {
-    "jscs": "^1.13.1"
+    "jscs": "^2.0.0"
   },
   "author": "Tim Branyen (@tbranyen)",
   "license": "MIT"
