@@ -1,0 +1,16 @@
+{
+	"root": true,
+
+	"extends": "@ljharb",
+
+	"rules": {
+		"func-style": [0],
+		"max-nested-callbacks": [2, 4],
+		"max-params": [2, 4],
+		"max-statements": [2, 14],
+		"new-cap": [2, { "capIsNewExceptions": ["Range"] }],
+		"no-console": [0],
+		"no-process-exit": [1],
+		"no-use-before-define": [1]
+	}
+}

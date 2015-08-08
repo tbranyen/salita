@@ -1,4 +1,5 @@
-var fs = require('fs');
+'use strict';
+
 var path = require('path');
 var npm = require('npm');
 var jsonFile = require('json-file-plus');
@@ -96,7 +97,7 @@ var createResultTable = function (caption) {
 /**
  * The main entry point.
  */
-function salita(dir, options, callback) {
+var salita = function salita(dir, options, callback) {
   chalk.enabled = !options['no-color'] && !options.json;
   // Package.json.
   var filename = path.join(dir, 'package.json');
@@ -137,13 +138,13 @@ function salita(dir, options, callback) {
 
       // Write back the package.json.
       if (options['dry-run']) {
-        callback(counts);
+        return callback(counts);
       } else {
         pkg.save(callback.bind(null, counts));
       }
     });
   }).done();
-}
+};
 
 /**
  * createDependenciesLookup
@@ -157,7 +158,6 @@ function dependenciesLookup(pkg, type, ignoreStars, ignorePegged) {
     return [];
   }
 
-  var names = Object.keys(pkg[type] || []);
   // Loop through and map the "lookup latest" to promises.
   var names = Object.keys(pkg[type] || []);
   var untouched = [];
@@ -208,7 +208,7 @@ function dependenciesLookup(pkg, type, ignoreStars, ignorePegged) {
         try {
           var range = semver.Range(existing);
           isUpdateable = !semver.ltr(version, range);
-        } catch (e) {}
+        } catch (e) {/**/}
         var updated = prefix + version;
         var result;
 

@@ -1,5 +1,7 @@
 #!/usr/bin/env node
 
+'use strict';
+
 var options = require('yargs')
   .boolean('color').default('color', true).describe('color', 'colorizes output')
   .describe('no-color', 'prevents colorized output')
@@ -20,9 +22,9 @@ if (options.json) { options['no-color'] = true; }
 
 var salita = require('../');
 
-salita(process.cwd(), options, function (counts) {
-  counts.then(function (counts) {
-    var sums = counts.reduce(function (sums, category) { return [sums[0] + category[0], sums[1] + category[1]]; }, [0, 0]);
+salita(process.cwd(), options, function (countsPromise) {
+  countsPromise.then(function (counts) {
+    var sums = counts.reduce(function (acc, category) { return [acc[0] + category[0], acc[1] + category[1]]; }, [0, 0]);
     var total = sums[0];
     var changed = sums[1];
     if (!options.json) {
