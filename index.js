@@ -52,6 +52,14 @@ var createResultTable = function (caption) {
             'to',
             chalk.yellow(result.after)
           ];
+        } else if (result.error) {
+          return [
+            chalk.red('Package not found: '),
+            result.name,
+            'at',
+            chalk.yellow(result.before),
+            chalk.bold.red('?')
+          ];
         } else if (!result.isUpdateable && !result.isStar && !result.isPegged) {
           return [
             chalk.red('Requested range not satisfied by: '),
@@ -155,7 +163,7 @@ function dependenciesLookup(pkg, type, ignoreStars, ignorePegged) {
   var untouched = [];
   var addUntouched = function (name, version, flags) {
     untouched.push(Promise.resolve(assign({
-	  name: name,
+      name: name,
       before: version,
       after: version,
       isChanged: false,
@@ -182,10 +190,20 @@ function dependenciesLookup(pkg, type, ignoreStars, ignorePegged) {
     });
   }
   var mapNameToLatest = function (name) {
-    return new Promise(function (resolve, reject) {
-      lookupDistTags(name, function (prefix, distTags) {
-        var version = distTags.latest;
+    return new Promise(function (resolve) {
+      lookupDistTags(name, function (error, prefix, distTags) {
         var existing = pkg[type][name];
+        if (error) {
+          return resolve({
+            name: name,
+            before: existing,
+            after: existing,
+            isChanged: false,
+            isUpdateable: false,
+            error: error
+          });
+        }
+        var version = distTags.latest;
         var isUpdateable = false;
         try {
           var range = semver.Range(existing);
@@ -240,13 +258,13 @@ function lookupDistTags(name, callback) {
 
   // Call View directly to ensure the arguments actually work.
   view([name, 'dist-tags'], true, function (err, desc) {
-    if (err) { throw new Error(err); }
+    if (err) { return callback(err); }
     var latest = Object.keys(desc);
     if (latest.length !== 1) {
       throw new Error('expected 1 version key, got: ' + latest);
     }
     var tags = desc[latest]['dist-tags'];
-    callback(prefix, tags);
+    callback(null, prefix, tags);
   });
 }
 
