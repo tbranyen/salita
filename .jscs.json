@@ -115,6 +115,10 @@
 		"maximum": 2
 	},
 
-	"requirePaddingNewLinesAfterUseStrict": true
+	"requirePaddingNewLinesAfterUseStrict": true,
+
+	"disallowArrowFunctions": true,
+
+	"validateOrderInObjectKeys": "asc-insensitive"
 }
 

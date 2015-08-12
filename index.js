@@ -12,21 +12,21 @@ var semver = require('semver');
 var getTable = function () {
   return new Table({
     chars: {
-      top: '',
-      'top-mid': '',
-      'top-left': '',
-      'top-right': '',
       bottom: '',
-      'bottom-mid': '',
       'bottom-left': '',
+      'bottom-mid': '',
       'bottom-right': '',
       left: '',
       'left-mid': '',
       mid: '',
       'mid-mid': '',
+      middle: '',
       right: '',
       'right-mid': '',
-      middle: ''
+      top: '',
+      'top-left': '',
+      'top-mid': '',
+      'top-right': ''
     }
   });
 };
@@ -163,11 +163,11 @@ function dependenciesLookup(pkg, type, ignoreStars, ignorePegged) {
   var untouched = [];
   var addUntouched = function (name, version, flags) {
     untouched.push(Promise.resolve(assign({
-      name: name,
-      before: version,
       after: version,
+      before: version,
       isChanged: false,
-      isUpdateable: false
+      isUpdateable: false,
+      name: name
     }, flags)));
   };
   if (ignoreStars || ignorePegged) {
@@ -195,12 +195,12 @@ function dependenciesLookup(pkg, type, ignoreStars, ignorePegged) {
         var existing = pkg[type][name];
         if (error) {
           return resolve({
-            name: name,
-            before: existing,
             after: existing,
+            before: existing,
+            error: error,
             isChanged: false,
             isUpdateable: false,
-            error: error
+            name: name
           });
         }
         var version = distTags.latest;
@@ -214,11 +214,11 @@ function dependenciesLookup(pkg, type, ignoreStars, ignorePegged) {
 
         // If there is no version or the version is the latest.
         result = {
-          name: name,
-          before: existing,
           after: updated,
+          before: existing,
           isChanged: version !== null && isUpdateable && existing !== updated,
-          isUpdateable: isUpdateable
+          isUpdateable: isUpdateable,
+          name: name
         };
         if (result.isChanged) {
           // Actually write to the package descriptor.
