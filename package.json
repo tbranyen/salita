@@ -22,7 +22,7 @@
     "cli-table": "^0.3.1",
     "json-file-plus": "^3.0.0",
     "npm": "v3.x-next",
-    "yargs": "^3.18.0",
+    "yargs": "^3.19.0",
     "object.assign": "^3.0.1",
     "promise": "^7.0.4",
     "semver": "^5.0.1"
