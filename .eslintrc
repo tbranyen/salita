@@ -5,6 +5,7 @@
 
 	"rules": {
 		"func-style": [0],
+		"global-require": [1],
 		"max-nested-callbacks": [2, 4],
 		"max-params": [2, 4],
 		"max-statements": [2, 14],
