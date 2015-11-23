@@ -208,7 +208,7 @@ function dependenciesLookup(pkg, type, ignoreStars, ignorePegged) {
         try {
           var range = semver.Range(existing);
           isUpdateable = !semver.ltr(version, range);
-        } catch (e) {/**/}
+        } catch (e) { /**/ }
         var updated = prefix + version;
         var result;
 
