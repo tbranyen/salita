@@ -1,7 +1,7 @@
 {
   "name": "salita",
   "bin": "bin/salita",
-  "version": "0.8.4",
+  "version": "0.8.5",
   "description": "Automatically upgrade all dependencies and devDependencies.",
   "main": "index.js",
   "scripts": {
