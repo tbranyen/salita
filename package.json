@@ -28,9 +28,9 @@
     "semver": "^5.1.0"
   },
   "devDependencies": {
-    "jscs": "^2.6.0",
-    "eslint": "^1.10.1",
-    "@ljharb/eslint-config": "^1.6.0"
+    "jscs": "^2.7.0",
+    "eslint": "^1.10.3",
+    "@ljharb/eslint-config": "^1.6.1"
   },
   "author": "Tim Branyen (@tbranyen)",
   "license": "MIT"
