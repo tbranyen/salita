@@ -98,7 +98,6 @@ var createResultTable = function (caption) {
  * The main entry point.
  */
 var salita = function salita(dir, options, callback) {
-  chalk.enabled = !options['no-color'] && !options.json;
   // Package.json.
   var filename = path.join(dir, 'package.json');
   jsonFile(filename).then(function (pkg) {

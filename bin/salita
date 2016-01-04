@@ -5,7 +5,7 @@
 var options = require('yargs')
   .boolean('color').default('color', true).describe('color', 'colorizes output')
   .describe('no-color', 'prevents colorized output')
-  .boolean('json').describe('json', 'provides parseable JSON output (implies --no-colors)')
+  .boolean('json').describe('json', 'provides parseable JSON output (implies --no-color)')
   .boolean('dry-run').describe('dry-run', 'prevents changes to package.json')
   .alias('dry-run', 'n')
   .boolean('ignore-stars').describe('ignore-stars', 'ignore updates to packages that are set to "*"')
@@ -18,7 +18,7 @@ var options = require('yargs')
   .argv;
 
 if (options.check) { options['dry-run'] = true; }
-if (options.json) { options['no-color'] = true; }
+if (options.json) { options.color = false; }
 
 var salita = require('../');
 
