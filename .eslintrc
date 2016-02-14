@@ -4,6 +4,7 @@
 	"extends": "@ljharb",
 
 	"rules": {
+		"consistent-return": [1],
 		"func-style": [0],
 		"global-require": [1],
 		"max-nested-callbacks": [2, 4],

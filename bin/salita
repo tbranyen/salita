@@ -2,6 +2,7 @@
 
 'use strict';
 
+/* eslint-disable newline-per-chained-call */
 var options = require('yargs')
   .boolean('color').default('color', true).describe('color', 'colorizes output')
   .describe('no-color', 'prevents colorized output')
@@ -16,6 +17,7 @@ var options = require('yargs')
   .strict()
   .wrap(null)
   .argv;
+/* eslint-enable newline-per-chained-call */
 
 if (options.check) { options['dry-run'] = true; }
 if (options.json) { options.color = false; }
