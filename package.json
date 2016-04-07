@@ -2,7 +2,7 @@
   "name": "salita",
   "bin": "bin/salita",
   "version": "0.8.5",
-  "description": "Automatically upgrade all dependencies and devDependencies.",
+  "description": "Automatically upgrade all dependencies, devDependencies, and peerDependencies",
   "main": "index.js",
   "scripts": {
     "lint": "npm run jscs && npm run eslint",
@@ -25,7 +25,8 @@
     "yargs": "^4.1.0",
     "object.assign": "^4.0.3",
     "promise": "^7.1.1",
-    "semver": "^5.1.0"
+    "semver": "^5.1.0",
+    "for-each": "^0.3.2"
   },
   "devDependencies": {
     "jscs": "^2.10.1",

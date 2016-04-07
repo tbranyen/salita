@@ -8,6 +8,7 @@ var chalk = require('chalk');
 var Promise = require('promise');
 var assign = require('object.assign');
 var semver = require('semver');
+var forEach = require('for-each');
 
 var getTable = function () {
   return new Table({
@@ -107,16 +108,22 @@ var salita = function salita(dir, options, callback) {
       console.log('Found package.json.');
     }
 
-    // Check all the dependencies.
-    var depLookups = Promise.all(dependenciesLookup(pkg.data, 'dependencies', options['ignore-stars'], options['ignore-pegged']));
-    var deps = depLookups.then(options.json ? createResultJSON('dependencies') : createResultTable('Dependencies'));
+    var deps = {
+      dependencies: 'Dependencies',
+      devDependencies: 'Development Dependencies',
+      peerDependencies: 'Peer Dependencies'
+    };
 
-    // Check all the devDependencies.
-    var devDepLookups = Promise.all(dependenciesLookup(pkg.data, 'devDependencies', options['ignore-stars'], options['ignore-pegged']));
-    var devDeps = devDepLookups.then(options.json ? createResultJSON('devDependencies') : createResultTable('Development Dependencies'));
+    var depLookups = [];
+    var depPromises = [];
+    forEach(deps, function (title, key) {
+        var depLookup = Promise.all(dependenciesLookup(pkg.data, key, options['ignore-stars'], options['ignore-pegged']));
+        depLookups.push(depLookup);
+        depPromises.push(depLookup.then(options.json ? createResultJSON(key) : createResultTable(title)));
+    });
 
     // Wait for all of them to resolve.
-    Promise.all([deps, devDeps]).then(function (depResults) {
+    Promise.all(depPromises).then(function (depResults) {
       if (options.json) {
         console.log(JSON.stringify(assign.apply(null, [{}].concat(depResults)), null, 2));
       } else {
@@ -133,7 +140,7 @@ var salita = function salita(dir, options, callback) {
         return [totalDeps, changedDeps];
       };
       var mapThen = function (a, b) { return function (promise) { return promise.then(a, b); }; };
-      var counts = Promise.all([depLookups, devDepLookups].map(mapThen(getDepCounts)));
+      var counts = Promise.all(depLookups.map(mapThen(getDepCounts)));
 
       // Write back the package.json.
       if (options['dry-run']) {
