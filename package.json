@@ -5,7 +5,8 @@
   "description": "Automatically upgrade all dependencies, devDependencies, and peerDependencies",
   "main": "index.js",
   "scripts": {
-    "lint": "npm run jscs && npm run eslint",
+    "lint": "npm run --silent jscs && npm run --silent eslint",
+    "pretest": "npm run --silent lint",
     "eslint": "eslint *.js bin/salita",
     "jscs": "jscs *.js bin/salita"
   },
@@ -29,9 +30,9 @@
     "for-each": "^0.3.2"
   },
   "devDependencies": {
-    "jscs": "^2.10.1",
-    "eslint": "^2.1.0",
-    "@ljharb/eslint-config": "^2.1.1"
+    "jscs": "^2.11.0",
+    "eslint": "^2.7.0",
+    "@ljharb/eslint-config": "^2.2.0"
   },
   "author": "Tim Branyen (@tbranyen)",
   "license": "MIT"
