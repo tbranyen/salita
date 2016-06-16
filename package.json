@@ -30,9 +30,9 @@
     "for-each": "^0.3.2"
   },
   "devDependencies": {
-    "jscs": "^2.11.0",
-    "eslint": "^2.7.0",
-    "@ljharb/eslint-config": "^2.2.0"
+    "jscs": "^3.0.4",
+    "eslint": "^2.12.0",
+    "@ljharb/eslint-config": "^5.0.0"
   },
   "author": "Tim Branyen (@tbranyen)",
   "license": "MIT"

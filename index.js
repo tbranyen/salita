@@ -117,9 +117,9 @@ var salita = function salita(dir, options, callback) {
     var depLookups = [];
     var depPromises = [];
     forEach(deps, function (title, key) {
-        var depLookup = Promise.all(dependenciesLookup(pkg.data, key, options['ignore-stars'], options['ignore-pegged']));
-        depLookups.push(depLookup);
-        depPromises.push(depLookup.then(options.json ? createResultJSON(key) : createResultTable(title)));
+      var depLookup = Promise.all(dependenciesLookup(pkg.data, key, options['ignore-stars'], options['ignore-pegged']));
+      depLookups.push(depLookup);
+      depPromises.push(depLookup.then(options.json ? createResultJSON(key) : createResultTable(title)));
     });
 
     // Wait for all of them to resolve.
@@ -139,15 +139,16 @@ var salita = function salita(dir, options, callback) {
         var changedDeps = results.filter(function (result) { return result.isChanged; }).length;
         return [totalDeps, changedDeps];
       };
-      var mapThen = function (a, b) { return function (promise) { return promise.then(a, b); }; };
+      var mapThen = function (a, b) {
+        return function (promise) { return promise.then(a, b); };
+      };
       var counts = Promise.all(depLookups.map(mapThen(getDepCounts)));
 
       // Write back the package.json.
       if (options['dry-run']) {
         return callback(counts);
-      } else {
-        pkg.save(callback.bind(null, counts));
       }
+      return pkg.save(callback.bind(null, counts));
     });
   }).done();
 };
@@ -231,7 +232,7 @@ function dependenciesLookup(pkg, type, ignoreStars, ignorePegged) {
           pkg[type][name] = updated;
         }
 
-        resolve(result);
+        return resolve(result);
       });
     });
   };
@@ -270,7 +271,7 @@ function lookupDistTags(name, callback) {
       throw new Error('expected 1 version key, got: ' + latest);
     }
     var tags = desc[latest]['dist-tags'];
-    callback(null, prefix, tags);
+    return callback(null, prefix, tags);
   });
 }
 
