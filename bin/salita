@@ -42,6 +42,10 @@ if (options.json) { options.color = false; }
 
 var salita = require('../');
 
+if (!options.update) {
+  console.warn('Running in dry-run mode. Use --update to persist changes to package.json.');
+}
+
 salita(process.cwd(), options, function (countsPromise) {
   countsPromise.then(function (counts) {
     var sums = counts.reduce(function (acc, category) { return [acc[0] + category[0], acc[1] + category[1]]; }, [0, 0]);
