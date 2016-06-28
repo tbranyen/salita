@@ -2,24 +2,41 @@
 
 'use strict';
 
-/* eslint-disable newline-per-chained-call */
+/* eslint newline-per-chained-call: 0 */
 var options = require('yargs')
   .boolean('color').default('color', true).describe('color', 'colorizes output')
   .describe('no-color', 'prevents colorized output')
   .boolean('json').describe('json', 'provides parseable JSON output (implies --no-color)')
   .boolean('dry-run').describe('dry-run', 'prevents changes to package.json')
-  .alias('dry-run', 'n')
+  .default('dry-run', false).alias('dry-run', 'n')
+  .boolean('update').describe('update', 'applies changes to package.json')
+  .default('update', true).alias('update', 'u')
   .boolean('ignore-stars').describe('ignore-stars', 'ignore updates to packages that are set to "*"')
   .boolean('ignore-pegged').describe('ignore-pegged', 'ignore updates to packages that are pegged to a single version, rather than a range')
-  .boolean('check').describe('check', 'implies --dry-run and returns with an exit code matching the number of updated dependencies')
+  .boolean('check').describe('check', 'implies --dry-run and --no-update, and returns with an exit code matching the number of updated dependencies')
   .help().alias('help', 'h')
   .version(require('../package').version).alias('version', 'v')
   .strict()
   .wrap(null)
+  .check(function checkContradictions(argv) {
+    /* eslint no-throw-literal: 0 */
+    if (argv.update && argv.check) {
+      throw 'Error: --update and --check are mutually exclusive';
+    }
+    if (argv.check && !argv.update && !argv['dry-run']) {
+      throw 'Error: --check and --no-dry-run are mutually exclusive';
+    }
+    if (argv.update && argv['dry-run']) {
+      throw 'Error: --update and --dry-run are mutually exclusive';
+    }
+    return true;
+  })
   .argv;
-/* eslint-enable newline-per-chained-call */
 
-if (options.check) { options['dry-run'] = true; }
+if (!options.update || options.check) {
+  options['dry-run'] = true;
+  options.update = false;
+}
 if (options.json) { options.color = false; }
 
 var salita = require('../');
