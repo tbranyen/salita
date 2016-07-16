@@ -27,9 +27,11 @@ var options = require('yargs')
     if (argv.check && !argv.update && !argv['dry-run']) {
       throw 'Error: --check and --no-dry-run are mutually exclusive';
     }
+    /*
     if (argv.update && argv['dry-run']) {
       throw 'Error: --update and --dry-run are mutually exclusive';
     }
+    */
     return true;
   })
   .argv;
