@@ -31,8 +31,8 @@
   },
   "devDependencies": {
     "jscs": "^3.0.7",
-    "eslint": "^3.1.0",
-    "@ljharb/eslint-config": "^6.0.0"
+    "eslint": "^3.6.1",
+    "@ljharb/eslint-config": "^8.0.0"
   },
   "author": "Tim Branyen (@tbranyen)",
   "license": "MIT"
