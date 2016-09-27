@@ -181,7 +181,7 @@ function dependenciesLookup(pkg, type, ignoreStars, ignorePegged) {
     names = names.filter(function (name) {
       var version = pkg[type][name];
 
-      var isStar = version === '*';
+      var isStar = version === '*' || version === 'latest';
       if (ignoreStars && isStar) {
         return addUntouched(name, version, { isStar: true });
       }
