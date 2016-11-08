@@ -21,9 +21,11 @@ var options = require('yargs')
   .wrap(null)
   .check(function checkContradictions(argv) {
     /* eslint no-throw-literal: 0 */
+    /*
     if (argv.update && argv.check) {
       throw 'Error: --update and --check are mutually exclusive';
     }
+    */
     if (argv.check && !argv.update && !argv['dry-run']) {
       throw 'Error: --check and --no-dry-run are mutually exclusive';
     }
