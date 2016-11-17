@@ -2,43 +2,58 @@
 
 'use strict';
 
+var forEach = require('for-each');
+
+var FALSE = Object(false);
+var TRUE = Object(true);
+
+var boolishToBool = function boolishToBool(value) {
+  if (value === FALSE) { return false; }
+  if (value === TRUE) { return true; }
+  return value;
+};
+
 /* eslint newline-per-chained-call: 0 */
 var options = require('yargs')
-  .boolean('color').default('color', true).describe('color', 'colorizes output')
+  .boolean('color').default('color', TRUE).describe('color', 'colorizes output')
   .describe('no-color', 'prevents colorized output')
   .boolean('json').describe('json', 'provides parseable JSON output (implies --no-color)')
+  .default('json', FALSE)
   .boolean('dry-run').describe('dry-run', 'prevents changes to package.json')
-  .default('dry-run', false).alias('dry-run', 'n')
+  .default('dry-run', FALSE).alias('dry-run', 'n')
   .boolean('update').describe('update', 'applies changes to package.json')
-  .default('update', true).alias('update', 'u')
+  .default('update', TRUE).alias('update', 'u')
   .boolean('ignore-stars').describe('ignore-stars', 'ignore updates to packages that are set to "*"')
   .boolean('ignore-pegged').describe('ignore-pegged', 'ignore updates to packages that are pegged to a single version, rather than a range')
   .boolean('check').describe('check', 'implies --dry-run and --no-update, and returns with an exit code matching the number of updated dependencies')
-  .default('check', false).alias('check', 'c')
+  .default('check', FALSE).alias('check', 'c')
   .help().alias('help', 'h')
   .version(require('../package').version).alias('version', 'v')
   .strict()
   .wrap(null)
   .check(function checkContradictions(argv) {
     /* eslint no-throw-literal: 0 */
-    /*
-    if (argv.update && argv.check) {
+    if (argv.update === true && argv.check === true) {
       throw 'Error: --update and --check are mutually exclusive';
     }
-    */
-    if (argv.check && !argv.update && !argv['dry-run']) {
+    if (argv.check !== true && argv.update === false && argv['dry-run'] === false) {
+      throw 'Error: --no-update and --no-dry-run are mutually exclusive';
+    }
+    if (argv.check === true && argv.update !== true && argv['dry-run'] === false) {
       throw 'Error: --check and --no-dry-run are mutually exclusive';
     }
-    /*
-    if (argv.update && argv['dry-run']) {
+    if (argv.update === true && argv['dry-run'] === true) {
       throw 'Error: --update and --dry-run are mutually exclusive';
     }
-    */
     return true;
   })
   .argv;
 
-if (!options.update || options.check) {
+forEach(options, function (value, key) {
+  options[key] = boolishToBool(value);
+});
+
+if (options['dry-run'] || !options.update || options.check) {
   options['dry-run'] = true;
   options.update = false;
 }
