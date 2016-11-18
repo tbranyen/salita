@@ -53,6 +53,10 @@ forEach(options, function (value, key) {
   options[key] = boolishToBool(value);
 });
 
+if (options.update) {
+  options['dry-run'] = false;
+}
+
 if (options['dry-run'] || !options.update || options.check) {
   options['dry-run'] = true;
   options.update = false;
