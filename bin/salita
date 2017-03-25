@@ -3,6 +3,7 @@
 'use strict';
 
 var forEach = require('for-each');
+var salita = require('../');
 
 var FALSE = Object(false);
 var TRUE = Object(true);
@@ -11,6 +12,23 @@ var boolishToBool = function boolishToBool(value) {
   if (value === FALSE) { return false; }
   if (value === TRUE) { return true; }
   return value;
+};
+
+var hasDuplicates = function (arr) {
+  var len = arr.length - 1;
+  while (len >= 0) {
+    if (arr.indexOf(arr[len]) !== len) {
+      return true;
+    }
+    len -= 1;
+  }
+  return false;
+};
+
+var hasUnsupported = function (args) {
+  return args.some(function (arg) {
+    return salita.sections.indexOf(arg) < 0;
+  });
 };
 
 /* eslint newline-per-chained-call: 0 */
@@ -27,12 +45,14 @@ var options = require('yargs')
   .boolean('ignore-pegged').describe('ignore-pegged', 'ignore updates to packages that are pegged to a single version, rather than a range')
   .boolean('check').describe('check', 'implies --dry-run and --no-update, and returns with an exit code matching the number of updated dependencies')
   .default('check', FALSE).alias('check', 'c')
+  .array('sections').describe('sections', 'comma-separated list of sections to process.')
+  .default('sections', salita.sections).alias('sections', 's')
   .help().alias('help', 'h')
   .version(require('../package').version).alias('version', 'v')
   .strict()
   .wrap(null)
   .check(function checkContradictions(argv) {
-    /* eslint no-throw-literal: 0 */
+    /* eslint no-throw-literal: 0 , max-statements: 0 */
     if (argv.update === true && argv.check === true) {
       throw 'Error: --update and --check are mutually exclusive';
     }
@@ -44,6 +64,15 @@ var options = require('yargs')
     }
     if (argv.update === true && argv['dry-run'] === true) {
       throw 'Error: --update and --dry-run are mutually exclusive';
+    }
+    if (argv.sections.length < 1) {
+      throw 'Error: --sections specified but no values';
+    }
+    if (hasDuplicates(argv.sections)) {
+      throw 'Error: --sections has duplicates';
+    }
+    if (hasUnsupported(argv.sections)) {
+      throw 'Error: --sections has unsupported values';
     }
     return true;
   })
@@ -62,8 +91,6 @@ if (options['dry-run'] || !options.update || options.check) {
   options.update = false;
 }
 if (options.json) { options.color = false; }
-
-var salita = require('../');
 
 if (!options.update) {
   console.warn('Running in dry-run mode. Use --update to persist changes to package.json.');

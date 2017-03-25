@@ -95,6 +95,12 @@ var createResultTable = function (caption) {
   };
 };
 
+var deps = {
+  dependencies: { section: 'dep', title: 'Dependencies' },
+  devDependencies: { section: 'dev', title: 'Development Dependencies' },
+  peerDependencies: { section: 'peer', title: 'Peer Dependencies' }
+};
+
 /**
  * The main entry point.
  */
@@ -108,18 +114,14 @@ var salita = function salita(dir, options, callback) {
       console.log('Found package.json.');
     }
 
-    var deps = {
-      dependencies: 'Dependencies',
-      devDependencies: 'Development Dependencies',
-      peerDependencies: 'Peer Dependencies'
-    };
-
     var depLookups = [];
     var depPromises = [];
-    forEach(deps, function (title, key) {
-      var depLookup = Promise.all(dependenciesLookup(pkg.data, key, options['ignore-stars'], options['ignore-pegged']));
-      depLookups.push(depLookup);
-      depPromises.push(depLookup.then(options.json ? createResultJSON(key) : createResultTable(title)));
+    forEach(deps, function (value, key) {
+      if (options.sections.indexOf(value.section) > -1) {
+        var depLookup = Promise.all(dependenciesLookup(pkg.data, key, options['ignore-stars'], options['ignore-pegged']));
+        depLookups.push(depLookup);
+        depPromises.push(depLookup.then(options.json ? createResultJSON(key) : createResultTable(value.title)));
+      }
     });
 
     // Wait for all of them to resolve.
@@ -152,6 +154,11 @@ var salita = function salita(dir, options, callback) {
     });
   }).done();
 };
+
+salita.sections = [];
+forEach(deps, function (value) {
+  salita.sections.push(value.section);
+});
 
 /**
  * createDependenciesLookup
