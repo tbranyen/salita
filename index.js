@@ -153,6 +153,20 @@ var salita = function salita(dir, options, callback) {
   }).done();
 };
 
+function isVersionPegged(version) {
+  try {
+    const range = semver.Range(version);
+    return range.set.every(function (comparators) {
+      return comparators.length === 1 && String(comparators[0].operator || '') === '';
+    });
+  } catch (err) {
+    // semver.Range doesn't support all version specifications (like git
+    // references), so if it raises an error, assume the dep can be left
+    // untouched:
+    return true;
+  }
+}
+
 /**
  * createDependenciesLookup
  *
@@ -186,11 +200,7 @@ function dependenciesLookup(pkg, type, ignoreStars, ignorePegged) {
         return addUntouched(name, version, { isStar: true });
       }
 
-      var range = semver.Range(version);
-      var isPegged = range.set.every(function (comparators) {
-        return comparators.length === 1 && String(comparators[0].operator || '') === '';
-      });
-      if (ignorePegged && isPegged) {
+     if (ignorePegged && isVersionPegged(version)) {
         return addUntouched(name, version, { isPegged: true });
       }
       return true;
