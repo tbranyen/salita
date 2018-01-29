@@ -8,18 +8,22 @@
 	},
 
 	"rules": {
-		"consistent-return": [1],
-		"func-style": [0],
-		"global-require": [1],
+		"array-element-newline": 0,
+		"complexity": 0,
+		"consistent-return": 1,
+		"dot-notation": [2, { "allowKeywords": true }],
+		"func-name-matching": 1,
+		"func-style": 0,
+		"global-require": 1,
 		"indent": [2, 2],
 		"max-nested-callbacks": [2, 4],
 		"max-params": [2, 4],
 		"max-statements": [2, 14],
 		"max-statements-per-line": [2, { "max": 2 }],
 		"new-cap": [2, { "capIsNewExceptions": ["Range"] }],
-		"no-console": [0],
-		"no-magic-numbers": [0],
-		"no-process-exit": [1],
-		"no-use-before-define": [1]
+		"no-console": 0,
+		"no-magic-numbers": 0,
+		"no-process-exit": 1,
+		"no-use-before-define": 1
 	}
 }
