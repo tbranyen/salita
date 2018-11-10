@@ -19,15 +19,15 @@
     "Jordan Harband <ljharb@gmail.com> (https://github.com/ljharb/)"
   ],
   "dependencies": {
-    "chalk": "^2.3.0",
+    "chalk": "^2.4.1",
     "cli-table": "^0.3.1",
-    "for-each": "^0.3.2",
-    "json-file-plus": "^3.3.0",
+    "for-each": "^0.3.3",
+    "json-file-plus": "^3.3.1",
     "npm": "^5.5.1",
-    "object.assign": "^4.0.4",
-    "promise": "^8.0.1",
-    "semver": "^5.4.1",
-    "yargs": "^10.0.3"
+    "object.assign": "^4.1.0",
+    "promise": "^8.0.2",
+    "semver": "^5.6.0",
+    "yargs": "^10.1.2"
   },
   "devDependencies": {
     "@ljharb/eslint-config": "^12.2.1",
