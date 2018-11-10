@@ -32,15 +32,17 @@ var getTable = function () {
   });
 };
 
-var createResultJSON = function (key) {
+var createResultJSON = function (key, onlyChanged) {
   return function (results) {
     var obj = {};
-    obj[key] = results;
+    obj[key] = results.filter(function (result) {
+      return !onlyChanged || result.isChanged;
+    });
     return obj;
   };
 };
 
-var createResultTable = function (caption) {
+var createResultTable = function (caption, onlyChanged) {
   return function (results) {
     var table = getTable();
     if (results.length > 0) {
@@ -54,7 +56,8 @@ var createResultTable = function (caption) {
             'to',
             chalk.yellow(result.after)
           ];
-        } else if (result.error) {
+        }
+        if (result.error) {
           return [
             chalk.red('Package not found: '),
             result.name,
@@ -62,7 +65,8 @@ var createResultTable = function (caption) {
             chalk.yellow(result.before),
             chalk.bold.red('?')
           ];
-        } else if (!result.isUpdateable && !result.isStar && !result.isPegged) {
+        }
+        if (!result.isUpdateable && !result.isStar && !result.isPegged) {
           return [
             chalk.red('Requested range not satisfied by: '),
             result.name,
@@ -71,15 +75,17 @@ var createResultTable = function (caption) {
             'to',
             chalk.yellow(result.after)
           ];
-        } else {
-          return [
-            chalk.blue('Kept: '),
-            result.name,
-            'at',
-            chalk.yellow(result.before)
-          ];
         }
-      });
+        if (onlyChanged) {
+          return null;
+        }
+        return [
+          chalk.blue('Kept: '),
+          result.name,
+          'at',
+          chalk.yellow(result.before)
+        ];
+      }).filter(Boolean);
       table.push.apply(table, tableRows);
       var sortByName = function (a, b) {
         return a[1].localeCompare(b[1]);
@@ -108,6 +114,8 @@ var salita = function salita(dir, options, callback) {
       console.log('Found package.json.');
     }
 
+    var onlyChanged = !!options['only-changed'];
+
     var deps = {
       dependencies: 'Dependencies',
       devDependencies: 'Development Dependencies',
@@ -119,7 +127,10 @@ var salita = function salita(dir, options, callback) {
     forEach(deps, function (title, key) {
       var depLookup = Promise.all(dependenciesLookup(pkg.data, key, options['ignore-stars'], options['ignore-pegged']));
       depLookups.push(depLookup);
-      depPromises.push(depLookup.then(options.json ? createResultJSON(key) : createResultTable(title)));
+      var create = options.json
+        ? createResultJSON(key, onlyChanged)
+        : createResultTable(title, onlyChanged);
+      depPromises.push(depLookup.then(create));
     });
 
     // Wait for all of them to resolve.
