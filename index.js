@@ -160,9 +160,11 @@ function isVersionPegged(version) {
       return comparators.length === 1 && String(comparators[0].operator || '') === '';
     });
   } catch (err) {
-    // semver.Range doesn't support all version specifications (like git
-    // references), so if it raises an error, assume the dep can be left
-    // untouched:
+    /*
+     * semver.Range doesn't support all version specifications (like git
+     * references), so if it raises an error, assume the dep can be left
+     * untouched:
+     */
     return true;
   }
 }
@@ -268,8 +270,7 @@ function loadNPM() {
  * @param {Function} callback - A function to call with the dist tags.
  */
 function lookupDistTags(name, callback) {
-  // Need to require here, because NPM does all sorts of funky global
-  // attaching.
+  // Need to require here, because NPM does all sorts of funky global attaching.
   var view = require('npm/lib/view');
   var prefix = npm.config.get('save-prefix');
 

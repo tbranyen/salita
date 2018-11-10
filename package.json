@@ -30,8 +30,8 @@
     "yargs": "^10.1.2"
   },
   "devDependencies": {
-    "@ljharb/eslint-config": "^12.2.1",
-    "eslint": "^4.16.0",
+    "@ljharb/eslint-config": "^13.0.0",
+    "eslint": "^5.9.0",
     "jscs": "^3.0.7"
   },
   "engines": {
