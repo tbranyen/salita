@@ -19,14 +19,14 @@
     "Jordan Harband <ljharb@gmail.com> (https://github.com/ljharb/)"
   ],
   "dependencies": {
-    "chalk": "^2.4.1",
+    "chalk": "^2.4.2",
     "cli-table": "^0.3.1",
     "for-each": "^0.3.3",
     "json-file-plus": "^3.3.1",
-    "npm": "^5.5.1",
+    "npm": "^5.10.0",
     "object.assign": "^4.1.0",
-    "promise": "^8.0.2",
-    "semver": "^5.6.0",
+    "promise": "^8.0.3",
+    "semver": "^5.7.0",
     "yargs": "^10.1.2"
   },
   "devDependencies": {
