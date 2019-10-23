@@ -5,10 +5,8 @@
   "description": "Automatically upgrade all dependencies, devDependencies, and peerDependencies",
   "main": "index.js",
   "scripts": {
-    "lint": "npm run --silent jscs && npm run --silent eslint",
     "pretest": "npm run --silent lint",
-    "eslint": "eslint *.js bin/salita",
-    "jscs": "jscs *.js bin/salita"
+    "lint": "eslint *.js bin/salita"
   },
   "repository": {
     "type": "git",
@@ -31,8 +29,7 @@
   },
   "devDependencies": {
     "@ljharb/eslint-config": "^13.1.1",
-    "eslint": "^5.16.0",
-    "jscs": "^3.0.7"
+    "eslint": "^5.16.0"
   },
   "engines": {
     "node": ">= 4"
