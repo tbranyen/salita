@@ -119,7 +119,9 @@ var salita = function salita(dir, options, callback) {
     var deps = {
       dependencies: 'Dependencies',
       devDependencies: 'Development Dependencies',
-      peerDependencies: 'Peer Dependencies'
+      peerDependencies: 'Peer Dependencies',
+      bundledDependencies: 'Bundled Dependencies',
+      optionalDependencies: 'Optional Dependencies'
     };
 
     var depLookups = [];
