@@ -1,39 +1,49 @@
 {
-  "name": "salita",
-  "bin": "bin/salita",
-  "version": "0.11.2",
-  "description": "Automatically upgrade all dependencies, devDependencies, and peerDependencies",
-  "main": "index.js",
-  "scripts": {
-    "pretest": "npm run --silent lint",
-    "lint": "eslint *.js bin/salita"
-  },
-  "repository": {
-    "type": "git",
-    "url": "git://github.com/tbranyen/salita.git"
-  },
-  "contributors": [
-    "Tim Branyen (https://github.com/tbranyen)",
-    "Jordan Harband <ljharb@gmail.com> (https://github.com/ljharb/)"
-  ],
-  "dependencies": {
-    "chalk": "^2.4.2",
-    "cli-table": "^0.3.1",
-    "for-each": "^0.3.3",
-    "json-file-plus": "^3.3.1",
-    "object.assign": "^4.1.0",
-    "promise": "^8.0.3",
-    "semver": "^5.7.1",
-    "string.prototype.trim": "^1.2.1",
-    "yargs": "^10.1.2"
-  },
-  "devDependencies": {
-    "@ljharb/eslint-config": "^14.1.0",
-    "eslint": "^6.5.1"
-  },
-  "engines": {
-    "node": ">= 4"
-  },
-  "author": "Tim Branyen (@tbranyen)",
-  "license": "MIT"
+	"name": "salita",
+	"bin": "bin/salita",
+	"version": "0.11.2",
+	"description": "Automatically upgrade all dependencies, devDependencies, and peerDependencies",
+	"main": "index.js",
+	"scripts": {
+		"pretest": "npm run --silent lint",
+		"lint": "eslint *.js bin/salita",
+		"version": "auto-changelog && git add CHANGELOG.md",
+		"postversion": "auto-changelog && git add CHANGELOG.md && git commit --no-edit --amend && git tag -f \"v$(node -e \"console.log(require('./package.json').version)\")\""
+	},
+	"repository": {
+		"type": "git",
+		"url": "git://github.com/tbranyen/salita.git"
+	},
+	"contributors": [
+		"Tim Branyen (https://github.com/tbranyen)",
+		"Jordan Harband <ljharb@gmail.com> (https://github.com/ljharb/)"
+	],
+	"dependencies": {
+		"chalk": "^2.4.2",
+		"cli-table": "^0.3.1",
+		"for-each": "^0.3.3",
+		"json-file-plus": "^3.3.1",
+		"object.assign": "^4.1.0",
+		"promise": "^8.0.3",
+		"semver": "^5.7.1",
+		"string.prototype.trim": "^1.2.1",
+		"yargs": "^10.1.2"
+	},
+	"devDependencies": {
+		"@ljharb/eslint-config": "^14.1.0",
+		"auto-changelog": "^1.16.2",
+		"eslint": "^6.5.1"
+	},
+	"engines": {
+		"node": ">= 4"
+	},
+	"author": "Tim Branyen (@tbranyen)",
+	"license": "MIT",
+	"auto-changelog": {
+		"output": "CHANGELOG.md",
+		"template": "keepachangelog",
+		"unreleased": false,
+		"commitLimit": false,
+		"backfillLimit": false
+	}
 }
