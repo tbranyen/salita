@@ -1,7 +1,8 @@
 'use strict';
 
 var path = require('path');
-var npm = require('npm');
+var exec = require('child_process').exec;
+var trim = require('string.prototype.trim');
 var jsonFile = require('json-file-plus');
 var Table = require('cli-table');
 var chalk = require('chalk');
@@ -108,8 +109,6 @@ var salita = function salita(dir, options, callback) {
   // Package.json.
   var filename = path.join(dir, 'package.json');
   jsonFile(filename).then(function (pkg) {
-    return loadNPM().then(function () { return pkg; });
-  }).then(function (pkg) {
     if (pkg && !options.json) {
       console.log('Found package.json.');
     }
@@ -264,18 +263,6 @@ function dependenciesLookup(pkg, type, ignoreStars, ignorePegged) {
   return names.map(mapNameToLatest).concat(untouched);
 }
 
-function loadNPM() {
-  return new Promise(function (resolve, reject) {
-    npm.load({}, function (err, result) {
-      if (err) {
-        reject(err);
-      } else {
-        resolve(result);
-      }
-    });
-  });
-}
-
 /**
  * Given a package name, lookup the semantic tags.
  *
@@ -283,20 +270,32 @@ function loadNPM() {
  * @param {Function} callback - A function to call with the dist tags.
  */
 function lookupDistTags(name, callback) {
-  // Need to require here, because NPM does all sorts of funky global attaching.
-  var view = require('npm/lib/view');
-  var prefix = npm.config.get('save-prefix');
-
-  // Call View directly to ensure the arguments actually work.
-  view([name, 'dist-tags'], true, function (err, desc) {
-    if (err) { return callback(err); }
-    var latest = Object.keys(desc);
-    if (latest.length !== 1) {
-      throw new Error('expected 1 version key, got: ' + latest);
-    }
-    var tags = desc[latest]['dist-tags'];
-    return callback(null, prefix, tags);
+  var pPrefix = new Promise(function (resolve, reject) {
+    exec('npm config get save-prefix', function (err, prefix) {
+      if (err) {
+        reject(err);
+      } else {
+        resolve(trim(prefix));
+      }
+    });
   });
+  var pTags = new Promise(function (resolve, reject) {
+    exec('npm show --json ' + JSON.stringify(name) + ' dist-tags', function (err, tags) {
+      if (err) {
+        reject(err);
+      } else {
+        resolve(JSON.parse(tags));
+      }
+    });
+  });
+  Promise.all([pPrefix, pTags]).then(
+    function (results) {
+      callback(null, results[0], results[1]);
+    },
+    function (err) {
+      callback(err);
+    }
+  );
 }
 
 module.exports = salita;

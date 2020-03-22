@@ -22,9 +22,17 @@
 		"new-cap": [2, { "capIsNewExceptions": ["Range"] }],
 		"no-console": 0,
 		"no-magic-numbers": 0,
-		"no-process-exit": 1,
 		"no-use-before-define": 1,
 		"operator-linebreak": [2, "before"],
 		"sort-keys": 0,
-	}
+	},
+
+	"overrides": [
+		{
+			"files": "bin/**",
+			"rules": {
+				"no-process-exit": 0,
+			},
+		},
+	],
 }
