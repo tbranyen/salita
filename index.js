@@ -162,7 +162,7 @@ var salita = function salita(dir, options, callback) {
       }
       return pkg.save(callback.bind(null, counts));
     });
-  }).done();
+  });
 };
 
 function isVersionPegged(version) {
