@@ -5,6 +5,15 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [v0.12.2](https://github.com/ljharb/salita/compare/v0.12.1...v0.12.2) - 2021-02-18
+
+### Commits
+
+- [Dev Deps] update `eslint`, `@ljharb/eslint-config`, `auto-changelog` [`39fed9d`](https://github.com/ljharb/salita/commit/39fed9dd55f4907f1e1cbda74ef283bdd33f02ba)
+- [Deps] update `object.assign`, `promise`, `string.prototype.trim` [`cecf99d`](https://github.com/ljharb/salita/commit/cecf99deb48330079a6e4632eccae4b8ea8dfdea)
+- [Fix] peg `cli-table` to v0.3.1, since v0.3.2+ has a breaking change [`383aea3`](https://github.com/ljharb/salita/commit/383aea33de5995c276751cfa7c429fbd38ad5c8b)
+- [Fix] peg `string-width` to v2.0, due to a breaking change in v2.1 [`4c6108f`](https://github.com/ljharb/salita/commit/4c6108fb8530022a8ab41a8a90bab3a6cfccdf00)
+
 ## [v0.12.1](https://github.com/ljharb/salita/compare/v0.12.0...v0.12.1) - 2020-03-26
 
 ### Commits
