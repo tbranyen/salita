@@ -30,9 +30,9 @@
 		"yargs": "^10.1.2"
 	},
 	"devDependencies": {
-		"@ljharb/eslint-config": "^14.1.0",
-		"auto-changelog": "^1.16.2",
-		"eslint": "^6.5.1"
+		"@ljharb/eslint-config": "^17.5.1",
+		"auto-changelog": "^2.2.1",
+		"eslint": "^7.20.0"
 	},
 	"engines": {
 		"node": ">= 4"
@@ -44,6 +44,7 @@
 		"template": "keepachangelog",
 		"unreleased": false,
 		"commitLimit": false,
-		"backfillLimit": false
+		"backfillLimit": false,
+		"hideCredit": true
 	}
 }

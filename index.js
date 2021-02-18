@@ -253,7 +253,7 @@ function dependenciesLookup(pkg, type, ignoreStars, ignorePegged) {
         };
         if (result.isChanged) {
           // Actually write to the package descriptor.
-          pkg[type][name] = updated;
+          pkg[type][name] = updated; // eslint-disable-line no-param-reassign
         }
 
         return resolve(result);
