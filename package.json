@@ -28,7 +28,6 @@
 		"object.assign": "^4.1.2",
 		"promise": "^8.1.0",
 		"semver": "^5.7.1",
-		"string-width": "~2.0.0",
 		"string.prototype.trim": "^1.2.3",
 		"yargs": "^10.1.2"
 	},
