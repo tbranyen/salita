@@ -3,7 +3,7 @@
 	"bin": {
 		"salita": "bin/salita"
 	},
-	"version": "0.12.2",
+	"version": "0.12.3",
 	"description": "Automatically upgrade all dependencies, devDependencies, and peerDependencies",
 	"main": "index.js",
 	"scripts": {
