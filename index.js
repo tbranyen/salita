@@ -1,17 +1,17 @@
 'use strict';
 
-var path = require('path');
-var exec = require('child_process').exec;
-var trim = require('string.prototype.trim');
-var jsonFile = require('json-file-plus');
-var Table = require('cli-table');
-var chalk = require('chalk');
-var Promise = require('promise');
-var assign = require('object.assign');
-var semver = require('semver');
-var forEach = require('for-each');
+const path = require('path');
+const exec = require('child_process').exec;
+const trim = require('string.prototype.trim');
+const jsonFile = require('json-file-plus');
+const Table = require('cli-table');
+const chalk = require('chalk');
+const Promise = require('promise');
+const assign = require('object.assign');
+const semver = require('semver');
+const forEach = require('for-each');
 
-var getTable = function () {
+const getTable = function () {
   return new Table({
     chars: {
       bottom: '',
@@ -28,26 +28,24 @@ var getTable = function () {
       top: '',
       'top-left': '',
       'top-mid': '',
-      'top-right': ''
-    }
+      'top-right': '',
+    },
   });
 };
 
-var createResultJSON = function (key, onlyChanged) {
+const createResultJSON = function (key, onlyChanged) {
   return function (results) {
-    var obj = {};
-    obj[key] = results.filter(function (result) {
-      return !onlyChanged || result.isChanged;
-    });
+    const obj = {};
+    obj[key] = results.filter((result) => !onlyChanged || result.isChanged);
     return obj;
   };
 };
 
-var createResultTable = function (caption, onlyChanged) {
+const createResultTable = function (caption, onlyChanged) {
   return function (results) {
-    var table = getTable();
+    const table = getTable();
     if (results.length > 0) {
-      var tableRows = results.map(function (result) {
+      const tableRows = results.map((result) => {
         if (result.isChanged) {
           return [
             chalk.green('Changed: '),
@@ -55,7 +53,7 @@ var createResultTable = function (caption, onlyChanged) {
             'from',
             chalk.yellow(result.before),
             'to',
-            chalk.yellow(result.after)
+            chalk.yellow(result.after),
           ];
         }
         if (result.error) {
@@ -64,7 +62,7 @@ var createResultTable = function (caption, onlyChanged) {
             result.name,
             'at',
             chalk.yellow(result.before),
-            chalk.bold.red('?')
+            chalk.bold.red('?'),
           ];
         }
         if (!result.isUpdateable && !result.isStar && !result.isPegged) {
@@ -74,7 +72,7 @@ var createResultTable = function (caption, onlyChanged) {
             'from',
             chalk.yellow(result.before),
             'to',
-            chalk.yellow(result.after)
+            chalk.yellow(result.after),
           ];
         }
         if (onlyChanged) {
@@ -84,11 +82,11 @@ var createResultTable = function (caption, onlyChanged) {
           chalk.blue('Kept: '),
           result.name,
           'at',
-          chalk.yellow(result.before)
+          chalk.yellow(result.before),
         ];
       }).filter(Boolean);
       table.push.apply(table, tableRows);
-      var sortByName = function (a, b) {
+      const sortByName = function (a, b) {
         return a[1].localeCompare(b[1]);
       };
       table.sort(sortByName);
@@ -96,8 +94,8 @@ var createResultTable = function (caption, onlyChanged) {
       table.push([chalk.gray('None found')]);
     }
     return [
-      chalk.green.underline(caption + ':'),
-      table
+      chalk.green.underline(`${caption}:`),
+      table,
     ];
   };
 };
@@ -105,56 +103,56 @@ var createResultTable = function (caption, onlyChanged) {
 /**
  * The main entry point.
  */
-var salita = function salita(dir, options, callback) {
+const salita = function salita(dir, options, callback) {
   // Package.json.
-  var filename = path.join(dir, 'package.json');
-  jsonFile(filename).then(function (pkg) {
+  const filename = path.join(dir, 'package.json');
+  jsonFile(filename).then((pkg) => {
     if (pkg && !options.json) {
       console.log('Found package.json.');
     }
 
-    var onlyChanged = !!options['only-changed'];
+    const onlyChanged = !!options['only-changed'];
 
-    var deps = {
+    const deps = {
       dependencies: 'Dependencies',
       devDependencies: 'Development Dependencies',
       peerDependencies: 'Peer Dependencies',
       bundledDependencies: 'Bundled Dependencies',
-      optionalDependencies: 'Optional Dependencies'
+      optionalDependencies: 'Optional Dependencies',
     };
 
-    var depLookups = [];
-    var depPromises = [];
-    forEach(deps, function (title, key) {
-      var depLookup = Promise.all(dependenciesLookup(pkg.data, key, options['ignore-stars'], options['ignore-pegged']));
+    const depLookups = [];
+    const depPromises = [];
+    forEach(deps, (title, key) => {
+      const depLookup = Promise.all(dependenciesLookup(pkg.data, key, options['ignore-stars'], options['ignore-pegged']));
       depLookups.push(depLookup);
-      var create = options.json
+      const create = options.json
         ? createResultJSON(key, onlyChanged)
         : createResultTable(title, onlyChanged);
       depPromises.push(depLookup.then(create));
     });
 
     // Wait for all of them to resolve.
-    Promise.all(depPromises).then(function (depResults) {
+    Promise.all(depPromises).then((depResults) => {
       if (options.json) {
         console.log(JSON.stringify(assign.apply(null, [{}].concat(depResults)), null, 2));
       } else {
-        depResults.forEach(function (results) {
-          results.map(String).forEach(function (result) {
+        depResults.forEach((results) => {
+          results.map(String).forEach((result) => {
             console.log(result);
           });
         });
       }
 
-      var getDepCounts = function (results) {
-        var totalDeps = results.length;
-        var changedDeps = results.filter(function (result) { return result.isChanged; }).length;
+      const getDepCounts = function (results) {
+        const totalDeps = results.length;
+        const changedDeps = results.filter((result) => result.isChanged).length;
         return [totalDeps, changedDeps];
       };
-      var mapThen = function (a, b) {
+      const mapThen = function (a, b) {
         return function (promise) { return promise.then(a, b); };
       };
-      var counts = Promise.all(depLookups.map(mapThen(getDepCounts)));
+      const counts = Promise.all(depLookups.map(mapThen(getDepCounts)));
 
       // Write back the package.json.
       if (options['dry-run']) {
@@ -167,10 +165,8 @@ var salita = function salita(dir, options, callback) {
 
 function isVersionPegged(version) {
   try {
-    var range = semver.Range(version);
-    return range.set.every(function (comparators) {
-      return comparators.length === 1 && String(comparators[0].operator || '') === '';
-    });
+    const range = semver.Range(version);
+    return range.set.every((comparators) => comparators.length === 1 && String(comparators[0].operator || '') === '');
   } catch (err) {
     /*
      * semver.Range doesn't support all version specifications (like git
@@ -194,22 +190,22 @@ function dependenciesLookup(pkg, type, ignoreStars, ignorePegged) {
   }
 
   // Loop through and map the "lookup latest" to promises.
-  var names = Object.keys(pkg[type] || []);
-  var untouched = [];
-  var addUntouched = function (name, version, flags) {
+  let names = Object.keys(pkg[type] || []);
+  const untouched = [];
+  const addUntouched = function (name, version, flags) {
     untouched.push(Promise.resolve(assign({
       after: version,
       before: version,
       isChanged: false,
       isUpdateable: false,
-      name: name
+      name,
     }, flags)));
   };
   if (ignoreStars || ignorePegged) {
-    names = names.filter(function (name) {
-      var version = pkg[type][name];
+    names = names.filter((name) => {
+      const version = pkg[type][name];
 
-      var isStar = version === '*' || version === 'latest';
+      const isStar = version === '*' || version === 'latest';
       if (ignoreStars && isStar) {
         return addUntouched(name, version, { isStar: true });
       }
@@ -220,36 +216,35 @@ function dependenciesLookup(pkg, type, ignoreStars, ignorePegged) {
       return true;
     });
   }
-  var mapNameToLatest = function (name) {
-    return new Promise(function (resolve) {
-      lookupDistTags(name, function (error, prefix, distTags) {
-        var existing = pkg[type][name];
+  const mapNameToLatest = function (name) {
+    return new Promise((resolve) => {
+      lookupDistTags(name, (error, prefix, distTags) => {
+        const existing = pkg[type][name];
         if (error) {
           return resolve({
             after: existing,
             before: existing,
-            error: error,
+            error,
             isChanged: false,
             isUpdateable: false,
-            name: name
+            name,
           });
         }
-        var version = distTags.latest;
-        var isUpdateable = false;
+        const version = distTags.latest;
+        let isUpdateable = false;
         try {
-          var range = semver.Range(existing);
+          const range = semver.Range(existing);
           isUpdateable = !semver.ltr(version, range);
         } catch (e) { /**/ }
-        var updated = prefix + version;
-        var result;
+        const updated = prefix + version;
 
         // If there is no version or the version is the latest.
-        result = {
+        const result = {
           after: updated,
           before: existing,
           isChanged: version !== null && isUpdateable && existing !== updated,
-          isUpdateable: isUpdateable,
-          name: name
+          isUpdateable,
+          name,
         };
         if (result.isChanged) {
           // Actually write to the package descriptor.
@@ -270,8 +265,8 @@ function dependenciesLookup(pkg, type, ignoreStars, ignorePegged) {
  * @param {Function} callback - A function to call with the dist tags.
  */
 function lookupDistTags(name, callback) {
-  var pPrefix = new Promise(function (resolve, reject) {
-    exec('npm config get save-prefix', function (err, prefix) {
+  const pPrefix = new Promise((resolve, reject) => {
+    exec('npm config get save-prefix', (err, prefix) => {
       if (err) {
         reject(err);
       } else {
@@ -279,8 +274,8 @@ function lookupDistTags(name, callback) {
       }
     });
   });
-  var pTags = new Promise(function (resolve, reject) {
-    exec('npm show --json ' + JSON.stringify(name) + ' dist-tags', function (err, tags) {
+  const pTags = new Promise((resolve, reject) => {
+    exec(`npm show --json ${JSON.stringify(name)} dist-tags`, (err, tags) => {
       if (err) {
         reject(err);
       } else {
@@ -289,10 +284,10 @@ function lookupDistTags(name, callback) {
     });
   });
   Promise.all([pPrefix, pTags]).then(
-    function (results) {
+    (results) => {
       callback(null, results[0], results[1]);
     },
-    function (err) {
+    (err) => {
       callback(err);
     }
   );

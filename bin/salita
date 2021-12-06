@@ -2,19 +2,19 @@
 
 'use strict';
 
-var forEach = require('for-each');
+const forEach = require('for-each');
 
-var FALSE = Object(false);
-var TRUE = Object(true);
+const FALSE = Object(false);
+const TRUE = Object(true);
 
-var boolishToBool = function boolishToBool(value) {
+const boolishToBool = function boolishToBool(value) {
   if (value === FALSE) { return false; }
   if (value === TRUE) { return true; }
   return value;
 };
 
 /* eslint newline-per-chained-call: 0 */
-var options = require('yargs')
+const options = require('yargs')
   .boolean('color').default('color', TRUE).describe('color', 'colorizes output')
   .describe('no-color', 'prevents colorized output')
   .boolean('json').describe('json', 'provides parseable JSON output (implies --no-color)')
@@ -51,7 +51,7 @@ var options = require('yargs')
   })
   .argv;
 
-forEach(options, function (value, key) {
+forEach(options, (value, key) => {
   options[key] = boolishToBool(value);
 });
 
@@ -65,19 +65,19 @@ if (options['dry-run'] || !options.update || options.check) {
 }
 if (options.json) { options.color = false; }
 
-var salita = require('../');
+const salita = require('../');
 
 if (!options.update) {
   console.warn('Running in dry-run mode. Use --update to persist changes to package.json.');
 }
 
-salita(process.cwd(), options, function (countsPromise) {
-  countsPromise.then(function (counts) {
-    var sums = counts.reduce(function (acc, category) { return [acc[0] + category[0], acc[1] + category[1]]; }, [0, 0]);
-    var total = sums[0];
-    var changed = sums[1];
+salita(process.cwd(), options, (countsPromise) => {
+  countsPromise.then((counts) => {
+    const sums = counts.reduce((acc, category) => [acc[0] + category[0], acc[1] + category[1]], [0, 0]);
+    const total = sums[0];
+    const changed = sums[1];
     if (!options.json) {
-      console.error('\n' + changed + ' updated out of ' + total + ' total dependencies.');
+      console.error(`\n${changed} updated out of ${total} total dependencies.`);
     }
     if (options.check) { process.exit(changed); }
   });

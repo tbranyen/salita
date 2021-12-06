@@ -22,19 +22,19 @@
 	],
 	"dependencies": {
 		"chalk": "^2.4.2",
-		"cli-table": "^0.3.6",
+		"cli-table": "^0.3.5",
 		"for-each": "^0.3.3",
 		"json-file-plus": "^3.3.1",
 		"object.assign": "^4.1.2",
 		"promise": "^8.1.0",
 		"semver": "^5.7.1",
-		"string.prototype.trim": "^1.2.5",
+		"string.prototype.trim": "^1.2.3",
 		"yargs": "^10.1.2"
 	},
 	"devDependencies": {
-		"@ljharb/eslint-config": "^17.5.1",
-		"auto-changelog": "^2.2.1",
-		"eslint": "^7.20.0"
+		"@ljharb/eslint-config": "^20.0.0",
+		"auto-changelog": "^2.3.0",
+		"eslint": "^8.4.0"
 	},
 	"engines": {
 		"node": ">= 4"

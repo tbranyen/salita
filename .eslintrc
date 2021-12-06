@@ -1,15 +1,10 @@
 {
 	"root": true,
 
-	"extends": "@ljharb",
-
-	"env": {
-		"node": true
-	},
+	"extends": "@ljharb/eslint-config/node/4",
 
 	"rules": {
 		"complexity": 0,
-		"dot-notation": [2, { "allowKeywords": true }],
 		"func-name-matching": 1,
 		"func-style": 0,
 		"global-require": 1,
@@ -20,19 +15,9 @@
 		"max-statements": [2, 14],
 		"max-statements-per-line": [2, { "max": 2 }],
 		"new-cap": [2, { "capIsNewExceptions": ["Range"] }],
-		"no-console": 0,
 		"no-magic-numbers": 0,
 		"no-use-before-define": 1,
 		"operator-linebreak": [2, "before"],
 		"sort-keys": 0,
 	},
-
-	"overrides": [
-		{
-			"files": "bin/**",
-			"rules": {
-				"no-process-exit": 0,
-			},
-		},
-	],
 }
