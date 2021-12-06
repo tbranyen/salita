@@ -22,7 +22,7 @@
 	],
 	"dependencies": {
 		"chalk": "^2.4.2",
-		"cli-table": "=0.3.6",
+		"cli-table": "^0.3.11",
 		"for-each": "^0.3.3",
 		"json-file-plus": "^3.3.1",
 		"object.assign": "^4.1.2",
