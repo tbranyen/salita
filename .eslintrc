@@ -4,20 +4,16 @@
 	"extends": "@ljharb/eslint-config/node/4",
 
 	"rules": {
-		"complexity": 0,
 		"func-name-matching": 1,
 		"func-style": 0,
-		"global-require": 1,
 		"indent": [2, 2],
 		"max-lines-per-function": 0,
 		"max-nested-callbacks": [2, 4],
 		"max-params": [2, 4],
-		"max-statements": [2, 14],
 		"max-statements-per-line": [2, { "max": 2 }],
 		"new-cap": [2, { "capIsNewExceptions": ["Range"] }],
 		"no-magic-numbers": 0,
 		"no-use-before-define": 1,
-		"operator-linebreak": [2, "before"],
 		"sort-keys": 0,
 	},
 }

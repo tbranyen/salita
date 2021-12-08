@@ -8,7 +8,7 @@
 	"main": "index.js",
 	"scripts": {
 		"pretest": "npm run --silent lint",
-		"lint": "eslint *.js bin/salita",
+		"lint": "eslint --ext=js,mjs . 'bin/**'",
 		"version": "auto-changelog && git add CHANGELOG.md",
 		"postversion": "auto-changelog && git add CHANGELOG.md && git commit --no-edit --amend && git tag -f \"v$(node -e \"console.log(require('./package.json').version)\")\""
 	},
@@ -34,7 +34,7 @@
 	"devDependencies": {
 		"@ljharb/eslint-config": "^20.0.0",
 		"auto-changelog": "^2.3.0",
-		"eslint": "^8.4.0"
+		"eslint": "^8.4.1"
 	},
 	"engines": {
 		"node": ">= 4"
