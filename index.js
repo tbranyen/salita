@@ -266,7 +266,7 @@ function dependenciesLookup(pkg, type, ignoreStars, ignorePegged) {
  */
 function lookupDistTags(name, callback) {
   const pPrefix = new Promise((resolve, reject) => {
-    exec('npm config get save-prefix', (err, prefix) => {
+    exec('npm config get save-prefix --no-workspaces', (err, prefix) => {
       if (err) {
         reject(err);
       } else {
