@@ -29,7 +29,7 @@
 		"object.assign": "^4.1.5",
 		"promise": "^8.3.0",
 		"semver": "^5.7.2",
-		"string.prototype.trim": "^1.2.8",
+		"string.prototype.trim": "^1.2.9",
 		"yargs": "^10.1.2"
 	},
 	"devDependencies": {
