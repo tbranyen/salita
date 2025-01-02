@@ -26,10 +26,10 @@
 		"cli-table": "^0.3.11",
 		"for-each": "^0.3.3",
 		"json-file-plus": "^3.3.1",
-		"object.assign": "^4.1.5",
+		"object.assign": "^4.1.7",
 		"promise": "^8.3.0",
-		"semver": "^5.7.2",
-		"string.prototype.trim": "^1.2.9",
+		"semver": "^6.3.1",
+		"string.prototype.trim": "^1.2.10",
 		"yargs": "^10.1.2"
 	},
 	"devDependencies": {
