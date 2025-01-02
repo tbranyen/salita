@@ -5,7 +5,7 @@ const exec = require('child_process').exec;
 const trim = require('string.prototype.trim');
 const jsonFile = require('json-file-plus');
 const Table = require('cli-table');
-const chalk = require('chalk');
+const colors = require('colors');
 const Promise = require('promise');
 const assign = require('object.assign');
 const semver = require('semver');
@@ -48,41 +48,41 @@ const createResultTable = function (caption, onlyChanged) {
       const tableRows = results.map((result) => {
         if (result.isChanged) {
           return [
-            chalk.green('Changed: '),
+            colors.green('Changed: '),
             result.name,
             'from',
-            chalk.yellow(result.before),
+            colors.yellow(result.before),
             'to',
-            chalk.yellow(result.after),
+            colors.yellow(result.after),
           ];
         }
         if (result.error) {
           return [
-            chalk.red('Package not found: '),
+            colors.red('Package not found: '),
             result.name,
             'at',
-            chalk.yellow(result.before),
-            chalk.bold.red('?'),
+            colors.yellow(result.before),
+            colors.bold.red('?'),
           ];
         }
         if (!result.isUpdateable && !result.isStar && !result.isPegged) {
           return [
-            chalk.red('Requested range not satisfied by: '),
+            colors.red('Requested range not satisfied by: '),
             result.name,
             'from',
-            chalk.yellow(result.before),
+            colors.yellow(result.before),
             'to',
-            chalk.yellow(result.after),
+            colors.yellow(result.after),
           ];
         }
         if (onlyChanged) {
           return null;
         }
         return [
-          chalk.blue('Kept: '),
+          colors.blue('Kept: '),
           result.name,
           'at',
-          chalk.yellow(result.before),
+          colors.yellow(result.before),
         ];
       }).filter(Boolean);
       table.push.apply(table, tableRows);
@@ -91,10 +91,10 @@ const createResultTable = function (caption, onlyChanged) {
       };
       table.sort(sortByName);
     } else {
-      table.push([chalk.gray('None found')]);
+      table.push([colors.gray('None found')]);
     }
     return [
-      chalk.green.underline(`${caption}:`),
+      colors.green.underline(`${caption}:`),
       table,
     ];
   };
