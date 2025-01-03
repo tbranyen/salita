@@ -5,6 +5,32 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [v0.12.4](https://github.com/ljharb/salita/compare/v0.12.3...v0.12.4) - 2025-01-03
+
+### Commits
+
+- [Dev Deps] update `eslint`, `@ljharb/eslint-config`, `eslint` [`b3bd23a`](https://github.com/ljharb/salita/commit/b3bd23a89cbfce78ad07c6f9198e005a441b44b2)
+- [New] add types [`f4a4b3f`](https://github.com/ljharb/salita/commit/f4a4b3f90421d55cf7393911204af399ad77e5d0)
+- [Refactor] switch from `chalk` to `colors` [`addbe4f`](https://github.com/ljharb/salita/commit/addbe4fb041df448031ba9fd5d1dfbf140304108)
+- [actions] reuse common workflows [`2c1aebd`](https://github.com/ljharb/salita/commit/2c1aebd8199980f658b86a279cbdb0e7b56c21f3)
+- [Dev Deps] update `eslint`, `@ljharb/eslint-config`, `aud`, `auto-changelog` [`b432472`](https://github.com/ljharb/salita/commit/b432472af57e58cfa0af57fe4072a0914c9cc8fb)
+- [Dev Deps] update `eslint` [`f413a6c`](https://github.com/ljharb/salita/commit/f413a6c105a0c3ba813d906e71a9c6d6ab8eb417)
+- [Deps] update `object.assign`, `semver`, `string.prototype.trim` [`a3ec128`](https://github.com/ljharb/salita/commit/a3ec1285bb8baa302d43e911b274717cea1301c5)
+- [Deps] update `object.assign`, `semver`, `string.prototype.trim` [`792f760`](https://github.com/ljharb/salita/commit/792f76015850f3880835a498380252d471e3edfc)
+- [Deps] update `@ljharb/eslint-config`, `aud` [`78a5f51`](https://github.com/ljharb/salita/commit/78a5f51096e2937d99034373d41d2f7ad24d3481)
+- [Deps] update `object.assign`, `promise`, `string.prototype.trim` [`9b0486c`](https://github.com/ljharb/salita/commit/9b0486cef352fe6486fc96c7e3b8068893bdb458)
+- [Deps] pin `cli-table`; update `string.prototype.trim` [`68abf80`](https://github.com/ljharb/salita/commit/68abf80fb8ac1aed0925af05122325fcda67c60f)
+- [Deps] update `cli-table`, `string.prototype.trim` [`bd3fac2`](https://github.com/ljharb/salita/commit/bd3fac2527a10b27d623737edd090053e882613f)
+- [Tests] replace `aud` with `npm audit` [`8bf4b33`](https://github.com/ljharb/salita/commit/8bf4b3320e4b2759f97b7bd9050e1c377970801c)
+- [meta] add `SECURITY.md` [`003191a`](https://github.com/ljharb/salita/commit/003191adc2ae706f7cce916a6d02d234a419a827)
+- [Dev Deps] update `auto-changelog` [`4a9c629`](https://github.com/ljharb/salita/commit/4a9c629e63d4b695337255df663463f7daa0b258)
+- [actions] skip `pack` check (no tests) [`a40f8ee`](https://github.com/ljharb/salita/commit/a40f8ee9e13bba2ca367c851c81234d7864b9003)
+- [Deps] update `string.prototype.trim` [`85321c1`](https://github.com/ljharb/salita/commit/85321c1fd69d3b8f09df0183de0a8599e912c3f5)
+- [Dev Deps] update `@ljharb/eslint-config` [`65c4a11`](https://github.com/ljharb/salita/commit/65c4a110eada2bfdcb51ee64ec9827c0f69a7bc9)
+- [Fix] ensure it works in npm workspaces [`9f346fa`](https://github.com/ljharb/salita/commit/9f346fab547d9ec1207e960ffa2c28d593b27c2c)
+- [Deps] unpin `cli-table` [`05d6961`](https://github.com/ljharb/salita/commit/05d69618aee88510380dda2b3d5c24fb45715c7f)
+- [Dev Deps] add missing peer dep [`8ff3cc9`](https://github.com/ljharb/salita/commit/8ff3cc9c2c5bf9d0d8cf04732df8fa7e9d64336e)
+
 ## [v0.12.3](https://github.com/ljharb/salita/compare/v0.12.2...v0.12.3) - 2021-02-18
 
 ### Commits
