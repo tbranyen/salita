@@ -34,9 +34,9 @@
 		"yargs": "^11.1.1"
 	},
 	"devDependencies": {
-		"@arethetypeswrong/cli": "^0.17.2",
+		"@arethetypeswrong/cli": "^0.18.2",
 		"@ljharb/eslint-config": "^21.1.1",
-		"@ljharb/tsconfig": "^0.2.3",
+		"@ljharb/tsconfig": "^0.3.2",
 		"@types/cli-table": "^0.3.4",
 		"@types/for-each": "^0.3.3",
 		"@types/json-file-plus": "^3.3.6",
