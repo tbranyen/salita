@@ -6,6 +6,10 @@
 	"version": "0.12.4",
 	"description": "Automatically upgrade all dependencies, devDependencies, and peerDependencies",
 	"main": "index.js",
+	"exports": {
+		".": "./index.mjs",
+		"./package.json": "./package.json"
+	},
 	"scripts": {
 		"pretest": "npm run --silent lint",
 		"lint": "eslint --ext=js,mjs . 'bin/**'",
