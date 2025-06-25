@@ -1,15 +1,13 @@
-'use strict';
-
-const path = require('path');
-const exec = require('child_process').exec;
-const trim = require('string.prototype.trim');
-const jsonFile = require('json-file-plus');
-const Table = require('cli-table');
-const colors = require('colors');
-const Promise = require('promise');
-const assign = require('object.assign');
-const semver = require('semver');
-const forEach = require('for-each');
+import { join } from 'path';
+import { exec } from 'child_process';
+import trim from 'string.prototype.trim';
+import jsonFile from 'json-file-plus';
+import Table from 'cli-table';
+import colors from 'colors';
+import Promise from 'promise';
+import assign from 'object.assign';
+import semver from 'semver';
+import forEach from 'for-each';
 
 /** @template Type @typedef {Type extends Table<infer X> ? X : never} extractGeneric<Type> */
 
@@ -106,13 +104,10 @@ const createResultTable = function (caption, onlyChanged) {
   };
 };
 
-/**
- * @type {import('.')}
- * The main entry point.
- */
-const salita = function salita(dir, options, callback) {
+/** @type {import('.')} */
+export default function salita(dir, options, callback) {
   // Package.json.
-  const filename = path.join(dir, 'package.json');
+  const filename = join(dir, 'package.json');
   jsonFile(filename).then((pkg) => {
     if (pkg && !options.json) {
       console.log('Found package.json.');
@@ -194,7 +189,9 @@ const salita = function salita(dir, options, callback) {
       return pkg.save(() => callback(counts));
     });
   });
-};
+}
+
+export { salita as 'module.exports' };
 
 /** @type {(version: string) => boolean} */
 function isVersionPegged(version) {
@@ -330,5 +327,3 @@ function lookupDistTags(name, callback) {
     }
   );
 }
-
-module.exports = salita;

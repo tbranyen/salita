@@ -65,7 +65,7 @@ if (options['dry-run'] || !options.update || options.check) {
 }
 if (options.json) { options.color = false; }
 
-const salita = require('../');
+const salita = require('../index.mjs');
 
 if (!options.update) {
   console.warn('Running in dry-run mode. Use --update to persist changes to package.json.');
