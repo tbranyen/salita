@@ -1,13 +1,10 @@
 import { join } from 'path';
 import { exec } from 'child_process';
-import trim from 'string.prototype.trim';
 import jsonFile from 'json-file-plus';
 import Table from 'cli-table';
-import colors from 'colors';
-import Promise from 'promise';
-import assign from 'object.assign';
 import semver from 'semver';
 import forEach from 'for-each';
+import { styleText } from 'util';
 
 /** @template Type @typedef {Type extends Table<infer X> ? X : never} extractGeneric<Type> */
 
@@ -40,10 +37,7 @@ function getTable() {
 /** @type {(key: string, onlyChanged: boolean) => (results: import('.').Result[]) => Record<string, import('.').Result[]>} */
 const createResultJSON = function (key, onlyChanged) {
   return function (results) {
-    /** @type {Record<string, import('.').Result[]>} */
-    const obj = {};
-    obj[key] = results.filter((result) => !onlyChanged || result.isChanged);
-    return obj;
+    return { [key]: results.filter((result) => !onlyChanged || result.isChanged) };
   };
 };
 
@@ -55,50 +49,50 @@ const createResultTable = function (caption, onlyChanged) {
       const tableRows = results.map((result) => {
         if (result.isChanged) {
           return [
-            colors.green('Changed: '),
+            styleText('green', 'Changed: '),
             result.name,
             'from',
-            colors.yellow(result.before),
+            styleText('yellow', result.before),
             'to',
-            colors.yellow(result.after),
+            styleText('yellow', result.after),
           ];
         }
         if (result.error) {
           return [
-            colors.red('Package not found: '),
+            styleText('red', 'Package not found: '),
             result.name,
             'at',
-            colors.yellow(result.before),
-            colors.bold.red('?'),
+            styleText('yellow', result.before),
+            styleText('bold', styleText('red', '?')),
           ];
         }
         if (!result.isUpdateable && !result.isStar && !result.isPegged) {
           return [
-            colors.red('Requested range not satisfied by: '),
+            styleText('red', 'Requested range not satisfied by: '),
             result.name,
             'from',
-            colors.yellow(result.before),
+            styleText('yellow', result.before),
             'to',
-            colors.yellow(result.after),
+            styleText('yellow', result.after),
           ];
         }
         if (onlyChanged) {
           return null;
         }
         return [
-          colors.blue('Kept: '),
+          styleText('blue', 'Kept: '),
           result.name,
           'at',
-          colors.yellow(result.before),
+          styleText('yellow', result.before),
         ];
       }).filter((x) => !!x);
       table.push.apply(table, tableRows);
       table.sort(/** @type {(a: string[], b: string[]) => number} */ (a, b) => a[1].localeCompare(b[1]));
     } else {
-      table.push([colors.gray('None found')]);
+      table.push([styleText('gray', 'None found')]);
     }
     return [
-      colors.green.underline(`${caption}:`),
+      styleText('green', styleText('underline', `${caption}:`)),
       table,
     ];
   };
@@ -154,7 +148,7 @@ export default function salita(dir, options, callback) {
         // eslint-disable-next-line no-extra-parens
         const jsonResults = /** @type {ReturnType<ResultJSON>[]} */ (depResults);
         /** @type {ReturnType<ResultJSON>} */
-        const smooshed = assign.apply(
+        const smooshed = Object.assign.apply(
           null,
           // @ts-expect-error TS sucks with concat
           // eslint-disable-next-line no-extra-parens
@@ -221,7 +215,7 @@ function isVersionPegged(version) {
  */
 function dependenciesLookup(pkg, type, ignoreStars, ignorePegged) {
   // See if any dependencies of this type exist.
-  if (pkg[type] && !Object.keys(pkg[type] || []).length) {
+  if (pkg[type] && Object.keys(pkg[type] || []).length === 0) {
     return [];
   }
 
@@ -231,13 +225,14 @@ function dependenciesLookup(pkg, type, ignoreStars, ignorePegged) {
   const untouched = [];
   /** @type {(name: string, version: string, flags: { isStar?: true, isPegged?: true }) => void} */
   const addUntouched = function (name, version, flags) {
-    untouched.push(Promise.resolve(assign({
+    untouched.push(Promise.resolve({
       after: version,
       before: version,
       isChanged: false,
       isUpdateable: false,
       name,
-    }, flags)));
+      ...flags,
+    }));
   };
   if (ignoreStars || ignorePegged) {
     names = names.filter((name) => {
@@ -270,7 +265,7 @@ function dependenciesLookup(pkg, type, ignoreStars, ignorePegged) {
           });
         }
         // eslint-disable-next-line no-extra-parens
-        const version = /** @type {NonNullable<typeof distTags>} */ (distTags).latest;
+        const { latest: version } = /** @type {NonNullable<typeof distTags>} */ (distTags);
         let isUpdateable = false;
         try {
           const range = new semver.Range(existing);
@@ -305,7 +300,7 @@ function lookupDistTags(name, callback) {
       if (err) {
         reject(err);
       } else {
-        resolve(trim(prefix));
+        resolve(prefix.trim());
       }
     });
   });
