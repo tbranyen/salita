@@ -53,7 +53,7 @@
 		"typescript": "next"
 	},
 	"engines": {
-		"node": ">= 4"
+		"node": ">= 24.3"
 	},
 	"author": "Tim Branyen (@tbranyen)",
 	"license": "MIT",
