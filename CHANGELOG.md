@@ -5,6 +5,21 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [v1.0.0](https://github.com/ljharb/salita/compare/v0.12.4...v1.0.0) - 2025-06-26
+
+### Commits
+
+- [Breaking] `salita` is now an `async function`; update `json-file-plus` [`cea2ad8`](https://github.com/ljharb/salita/commit/cea2ad8804312927f007b0a38c5ea436d8170d0c)
+- [Refactor] convert main file to ESM imports [`e7be651`](https://github.com/ljharb/salita/commit/e7be6513955ef9d3deb1f40ea22e56f8c28089c5)
+- [Refactor] remove no longer needed deps [`b11ac1d`](https://github.com/ljharb/salita/commit/b11ac1d73f180cb1257166bcfd91cc0fafbf9dfd)
+- [Breaking] refactor main file to be ESM [`25f1045`](https://github.com/ljharb/salita/commit/25f10452038546af3038991fb6c7aa099d421a0a)
+- [Deps] update `semver`, `yargs` [`cf9195a`](https://github.com/ljharb/salita/commit/cf9195a72317e6267de042c5eb446bce0b7368c2)
+- [Breaking] add `exports` [`28e214d`](https://github.com/ljharb/salita/commit/28e214d4f493fe277bd8b71c9911742a0b517ad6)
+- [Deps] update `for-each`, `json-file-plus` [`bd3d644`](https://github.com/ljharb/salita/commit/bd3d6449fae2da2d6a899789700f49d1ca55021d)
+- [Dev Deps] update `@arethetypeswrong/cli`, `@ljharb/tsconfig` [`19f4da1`](https://github.com/ljharb/salita/commit/19f4da12c20037b9776a159ba28cee69e90cf9fc)
+- [Breaking] require node 24 [`0dd3384`](https://github.com/ljharb/salita/commit/0dd3384101a3dd404a638b5988dba79cbafa5c93)
+- [Deps] update `yargs` [`76f58bb`](https://github.com/ljharb/salita/commit/76f58bb234b92fd636bfd664559f8e958812f2cb)
+
 ## [v0.12.4](https://github.com/ljharb/salita/compare/v0.12.3...v0.12.4) - 2025-01-03
 
 ### Commits
