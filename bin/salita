@@ -14,7 +14,7 @@ const boolishToBool = function boolishToBool(value) {
 };
 
 /* eslint newline-per-chained-call: 0 */
-const options = require('yargs')
+const options = require('yargs')()
   .boolean('color').default('color', TRUE).describe('color', 'colorizes output')
   .describe('no-color', 'prevents colorized output')
   .boolean('json').describe('json', 'provides parseable JSON output (implies --no-color)')
