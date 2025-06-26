@@ -42,7 +42,7 @@ const createResultJSON = function (key, onlyChanged) {
 };
 
 /** @type {(caption: string, onlyChanged: boolean) => (results: import('.').Result[]) => (string | Table)[]} */
-const createResultTable = function (caption, onlyChanged) {
+function createResultTable(caption, onlyChanged) {
   return function (results) {
     const table = getTable();
     if (results.length > 0) {
@@ -86,7 +86,7 @@ const createResultTable = function (caption, onlyChanged) {
           styleText('yellow', result.before),
         ];
       }).filter((x) => !!x);
-      table.push.apply(table, tableRows);
+      table.push(...tableRows);
       table.sort(/** @type {(a: string[], b: string[]) => number} */ (a, b) => a[1].localeCompare(b[1]));
     } else {
       table.push([styleText('gray', 'None found')]);
@@ -96,7 +96,7 @@ const createResultTable = function (caption, onlyChanged) {
       table,
     ];
   };
-};
+}
 
 /** @type {import('.')} */
 export default function salita(dir, options, callback) {
@@ -133,7 +133,7 @@ export default function salita(dir, options, callback) {
         /** @type {Parameters<typeof dependenciesLookup>[0]} */ (pkg.data),
         key,
         !!options['ignore-stars'],
-        !!options['ignore-pegged']
+        !!options['ignore-pegged'],
       ));
       depLookups.push(depLookup);
       const create = options.json
@@ -148,15 +148,7 @@ export default function salita(dir, options, callback) {
         // eslint-disable-next-line no-extra-parens
         const jsonResults = /** @type {ReturnType<ResultJSON>[]} */ (depResults);
         /** @type {ReturnType<ResultJSON>} */
-        const smooshed = Object.assign.apply(
-          null,
-          // @ts-expect-error TS sucks with concat
-          // eslint-disable-next-line no-extra-parens
-          /** @type {typeof jsonResults} */ (/** @type {unknown} */ ([])).concat(
-            {},
-            jsonResults
-          )
-        );
+        const smooshed = Object.assign({}, ...jsonResults);
         console.log(JSON.stringify(smooshed, null, 2));
       } else {
         // eslint-disable-next-line no-extra-parens
@@ -250,51 +242,51 @@ function dependenciesLookup(pkg, type, ignoreStars, ignorePegged) {
     });
   }
   /** @type {(name: string) => Promise<import('.').Result>} */
-  const mapNameToLatest = function (name) {
-    return new Promise((resolve) => {
-      lookupDistTags(name, (error, prefix, distTags) => {
-        const existing = pkg[type][name];
-        if (error) {
-          return resolve({
-            after: existing,
-            before: existing,
-            error,
-            isChanged: false,
-            isUpdateable: false,
-            name,
-          });
-        }
-        // eslint-disable-next-line no-extra-parens
-        const { latest: version } = /** @type {NonNullable<typeof distTags>} */ (distTags);
-        let isUpdateable = false;
-        try {
-          const range = new semver.Range(existing);
-          isUpdateable = !semver.ltr(version, range);
-        } catch (e) { /**/ }
-        const updated = prefix + version;
+  const mapNameToLatest = async function (name) {
+    const existing = pkg[type][name];
+    try {
+      const [prefix, distTags] = await lookupDistTags(name);
 
-        // If there is no version or the version is the latest.
-        const result = {
-          after: updated,
-          before: existing,
-          isChanged: version !== null && isUpdateable && existing !== updated,
-          isUpdateable,
-          name,
-        };
-        if (result.isChanged) {
-          // Actually write to the package descriptor.
-          pkg[type][name] = updated; // eslint-disable-line no-param-reassign
-        }
+      // eslint-disable-next-line no-extra-parens
+      const { latest: version } = /** @type {NonNullable<typeof distTags>} */ (distTags);
+      let isUpdateable = false;
+      try {
+        const range = new semver.Range(existing);
+        isUpdateable = !semver.ltr(version, range);
+      } catch (e) { /**/ }
+      const updated = prefix + version;
 
-        return resolve(result);
-      });
-    });
+      // If there is no version or the version is the latest.
+      const result = {
+        after: updated,
+        before: existing,
+        isChanged: version !== null && isUpdateable && existing !== updated,
+        isUpdateable,
+        name,
+      };
+      if (result.isChanged) {
+        // Actually write to the package descriptor.
+        pkg[type][name] = updated; // eslint-disable-line no-param-reassign
+      }
+
+      return result;
+    } catch (error) {
+      return {
+        after: existing,
+        before: existing,
+        // @ts-expect-error TODO FIXME
+        error,
+        isChanged: false,
+        isUpdateable: false,
+        name,
+      };
+    }
   };
   return names.map(mapNameToLatest).concat(untouched);
 }
 
 /** @type {import('.').LookupDistTags} */
-function lookupDistTags(name, callback) {
+async function lookupDistTags(name) {
   const pPrefix = new Promise((resolve, reject) => {
     exec('npm config get save-prefix --no-workspaces', (err, prefix) => {
       if (err) {
@@ -313,12 +305,6 @@ function lookupDistTags(name, callback) {
       }
     });
   });
-  Promise.all([pPrefix, pTags]).then(
-    (results) => {
-      callback(null, results[0], results[1]);
-    },
-    (err) => {
-      callback(err);
-    }
-  );
+
+  return Promise.all([pPrefix, pTags]);
 }

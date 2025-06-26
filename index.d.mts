@@ -1,6 +1,4 @@
-declare function DistTagErrorback(error: Error, prefix?: never, distTags?: never): void;
-declare function DistTagErrorback(error: null, prefix: string, distTags: Record<string, salita.Version>): void;
-declare function lookupDistTags(name: string, callback: typeof DistTagErrorback): void;
+declare function lookupDistTags(name: string): Promise<[prefix: string, distTags: Record<string, salita.Version>]>;
 
 declare namespace salita {
 	export type DepKey =
