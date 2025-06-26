@@ -99,82 +99,80 @@ function createResultTable(caption, onlyChanged) {
 }
 
 /** @type {import('.')} */
-export default function salita(dir, options, callback) {
+export default async function salita(dir, options) {
   // Package.json.
   const filename = join(dir, 'package.json');
-  jsonFile(filename).then((pkg) => {
-    if (pkg && !options.json) {
-      console.log('Found package.json.');
-    }
+  const pkg = await jsonFile(filename);
+  if (pkg && !options.json) {
+    console.log('Found package.json.');
+  }
 
-    const onlyChanged = !!options['only-changed'];
+  const onlyChanged = !!options['only-changed'];
 
-    /** @type {Record<import('.').DepKey, string>} */
-    const deps = {
-      dependencies: 'Dependencies',
-      devDependencies: 'Development Dependencies',
-      peerDependencies: 'Peer Dependencies',
-      bundledDependencies: 'Bundled Dependencies',
-      optionalDependencies: 'Optional Dependencies',
-    };
+  /** @type {Record<import('.').DepKey, string>} */
+  const deps = {
+    dependencies: 'Dependencies',
+    devDependencies: 'Development Dependencies',
+    peerDependencies: 'Peer Dependencies',
+    bundledDependencies: 'Bundled Dependencies',
+    optionalDependencies: 'Optional Dependencies',
+  };
 
-    /** @typedef {ReturnType<createResultJSON>} ResultJSON */
-    /** @typedef {ReturnType<createResultTable>} ResultTable */
-    /** @typedef {ResultJSON | ResultTable} CreateResult */
-    /** @typedef {ReturnType<CreateResult>} DepResult */
+  /** @typedef {ReturnType<createResultJSON>} ResultJSON */
+  /** @typedef {ReturnType<createResultTable>} ResultTable */
+  /** @typedef {ResultJSON | ResultTable} CreateResult */
+  /** @typedef {ReturnType<CreateResult>} DepResult */
 
-    /** @type {Promise<import('.').Result[]>[]} */
-    const depLookups = [];
-    /** @type {Promise<DepResult>[]} */
-    const depPromises = [];
-    forEach(deps, (title, key) => {
-      const depLookup = Promise.all(dependenciesLookup(
-        // eslint-disable-next-line no-extra-parens
-        /** @type {Parameters<typeof dependenciesLookup>[0]} */ (pkg.data),
-        key,
-        !!options['ignore-stars'],
-        !!options['ignore-pegged'],
-      ));
-      depLookups.push(depLookup);
-      const create = options.json
-        ? createResultJSON(key, onlyChanged)
-        : createResultTable(title, onlyChanged);
-      depPromises.push(depLookup.then((y) => create(y)));
-    });
-
-    // Wait for all of them to resolve.
-    Promise.all(depPromises).then((depResults) => {
-      if (options.json) {
-        // eslint-disable-next-line no-extra-parens
-        const jsonResults = /** @type {ReturnType<ResultJSON>[]} */ (depResults);
-        /** @type {ReturnType<ResultJSON>} */
-        const smooshed = Object.assign({}, ...jsonResults);
-        console.log(JSON.stringify(smooshed, null, 2));
-      } else {
-        // eslint-disable-next-line no-extra-parens
-        const tableResults = /** @type {ReturnType<ResultTable>[]} */ (/** @type {unknown} */ (depResults));
-        tableResults.forEach((results) => {
-          results.map(String).forEach((result) => {
-            console.log(result);
-          });
-        });
-      }
-
-      /** @type {(results: import('.').Result[]) => [number, number]} */
-      const getDepCounts = function (results) {
-        const totalDeps = results.length;
-        const changedDeps = results.filter((result) => result.isChanged).length;
-        return [totalDeps, changedDeps];
-      };
-      const counts = Promise.all(depLookups.map((x) => x.then(getDepCounts)));
-
-      // Write back the package.json.
-      if (options['dry-run']) {
-        return callback(counts);
-      }
-      return pkg.save(() => callback(counts));
-    });
+  /** @type {Promise<import('.').Result[]>[]} */
+  const depLookups = [];
+  /** @type {Promise<DepResult>[]} */
+  const depPromises = [];
+  forEach(deps, (title, key) => {
+    const depLookup = Promise.all(dependenciesLookup(
+      // eslint-disable-next-line no-extra-parens
+      /** @type {Parameters<typeof dependenciesLookup>[0]} */ (pkg.data),
+      key,
+      !!options['ignore-stars'],
+      !!options['ignore-pegged'],
+    ));
+    depLookups.push(depLookup);
+    const create = options.json
+      ? createResultJSON(key, onlyChanged)
+      : createResultTable(title, onlyChanged);
+    depPromises.push(depLookup.then((y) => create(y)));
   });
+
+  // Wait for all of them to resolve.
+  const depResults = await Promise.all(depPromises);
+  if (options.json) {
+    // eslint-disable-next-line no-extra-parens
+    const jsonResults = /** @type {ReturnType<ResultJSON>[]} */ (depResults);
+    /** @type {ReturnType<ResultJSON>} */
+    const smooshed = Object.assign({}, ...jsonResults);
+    console.log(JSON.stringify(smooshed, null, 2));
+  } else {
+    // eslint-disable-next-line no-extra-parens
+    const tableResults = /** @type {ReturnType<ResultTable>[]} */ (/** @type {unknown} */ (depResults));
+    tableResults.forEach((results) => {
+      results.map(String).forEach((result) => {
+        console.log(result);
+      });
+    });
+  }
+
+  /** @type {(results: import('.').Result[]) => [number, number]} */
+  function getDepCounts(results) {
+    const totalDeps = results.length;
+    const changedDeps = results.filter((result) => result.isChanged).length;
+    return [totalDeps, changedDeps];
+  }
+  const counts = Promise.all(depLookups.map((x) => x.then(getDepCounts)));
+
+  // Write back the package.json.
+  if (!options['dry-run']) {
+    await pkg.save();
+  }
+  return counts;
 }
 
 export { salita as 'module.exports' };
@@ -242,7 +240,7 @@ function dependenciesLookup(pkg, type, ignoreStars, ignorePegged) {
     });
   }
   /** @type {(name: string) => Promise<import('.').Result>} */
-  const mapNameToLatest = async function (name) {
+  async function mapNameToLatest(name) {
     const existing = pkg[type][name];
     try {
       const [prefix, distTags] = await lookupDistTags(name);
@@ -281,7 +279,7 @@ function dependenciesLookup(pkg, type, ignoreStars, ignorePegged) {
         name,
       };
     }
-  };
+  }
   return names.map(mapNameToLatest).concat(untouched);
 }
 

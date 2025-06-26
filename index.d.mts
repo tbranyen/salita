@@ -18,7 +18,6 @@ declare namespace salita {
 		'only-changed'?: boolean;
 	};
 
-	export type CB = (counts: Promise<[number, number][]>) => void;
 	export type LookupDistTags = typeof lookupDistTags;
 
 	export type Result = {
@@ -33,6 +32,6 @@ declare namespace salita {
 	};
 }
 
-declare function salita(dir: string, options: salita.Options, callback: salita.CB): void;
+declare function salita(dir: string, options: salita.Options): Promise<[number, number][]>;
 
 export = salita;
