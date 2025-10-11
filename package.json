@@ -30,7 +30,7 @@
 		"cli-table": "^0.3.11",
 		"for-each": "^0.3.5",
 		"json-file-plus": "^4.0.0",
-		"semver": "^7.7.2",
+		"semver": "^7.7.3",
 		"yargs": "^18.0.0"
 	},
 	"devDependencies": {
