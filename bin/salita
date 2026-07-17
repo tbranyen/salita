@@ -3,6 +3,7 @@
 'use strict';
 
 const forEach = require('for-each');
+const { hideBin } = require('yargs/helpers');
 
 const FALSE = Object(false);
 const TRUE = Object(true);
@@ -14,7 +15,7 @@ const boolishToBool = function boolishToBool(value) {
 };
 
 /* eslint newline-per-chained-call: 0 */
-const options = require('yargs')()
+const options = require('yargs')(hideBin(process.argv))
   .boolean('color').default('color', TRUE).describe('color', 'colorizes output')
   .describe('no-color', 'prevents colorized output')
   .boolean('json').describe('json', 'provides parseable JSON output (implies --no-color)')
