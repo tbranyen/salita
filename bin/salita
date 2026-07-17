@@ -2,11 +2,27 @@
 
 'use strict';
 
-const { hideBin } = require('yargs/helpers');
+const { helpText, parseOptions } = require('./options');
+const { version } = require('../package.json');
 
-const parseOptions = require('./options');
+let options;
+try {
+  options = parseOptions(process.argv.slice(2));
+} catch (e) {
+  console.error(e.message);
+  console.error(helpText);
+  process.exit(1);
+}
 
-const options = parseOptions(hideBin(process.argv));
+if (options.help) {
+  console.log(helpText);
+  process.exit(0);
+}
+
+if (options.version) {
+  console.log(version);
+  process.exit(0);
+}
 
 const salita = require('../index.mjs');
 

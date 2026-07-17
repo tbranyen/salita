@@ -2,7 +2,7 @@
 
 const test = require('tape');
 
-const parseOptions = require('../bin/options');
+const { parseOptions } = require('../bin/options');
 
 test('no flags', (t) => {
   const options = parseOptions([]);
@@ -66,6 +66,30 @@ test('--no-update --dry-run agree, and do not persist', (t) => {
 
   t.equal(options.update, false, 'does not update');
   t.equal(options['dry-run'], true, 'is a dry run');
+  t.end();
+});
+
+test('contradictory flags throw', (t) => {
+  t.throws(
+    () => { parseOptions(['--update', '--dry-run']); },
+    /--update and --dry-run are mutually exclusive/,
+    '--update and --dry-run',
+  );
+  t.throws(
+    () => { parseOptions(['--no-update', '--no-dry-run']); },
+    /--no-update and --no-dry-run are mutually exclusive/,
+    '--no-update and --no-dry-run',
+  );
+  t.throws(
+    () => { parseOptions(['--check', '--no-dry-run']); },
+    /--check and --no-dry-run are mutually exclusive/,
+    '--check and --no-dry-run',
+  );
+  t.throws(
+    () => { parseOptions(['--update', '--check']); },
+    /--update and --check are mutually exclusive/,
+    '--update and --check',
+  );
   t.end();
 });
 

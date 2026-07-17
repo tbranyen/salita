@@ -35,8 +35,7 @@
 		"cli-table": "^0.3.11",
 		"for-each": "^0.3.5",
 		"json-file-plus": "^4.0.1",
-		"semver": "^7.8.5",
-		"yargs": "^18.0.0"
+		"semver": "^7.8.5"
 	},
 	"devDependencies": {
 		"@arethetypeswrong/cli": "^0.18.5",
@@ -46,7 +45,6 @@
 		"@types/eslint": "^8.56.12",
 		"@types/node": "^26.1.1",
 		"@types/semver": "^7.7.1",
-		"@types/yargs": "^17.0.35",
 		"auto-changelog": "^2.6.0",
 		"eslint": "^8.57.1",
 		"npmignore": "^0.3.5",

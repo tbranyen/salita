@@ -1,79 +1,91 @@
 'use strict';
 
-const forEach = require('for-each');
-const yargs = require('yargs');
+const { parseArgs } = require('util');
 
-const { version } = require('../package.json');
+const helpText = [
+  'Usage: salita [options]',
+  '',
+  'Options:',
+  '      --color          colorizes output  [boolean] [default: true]',
+  '      --no-color       prevents colorized output',
+  '      --json           provides parseable JSON output (implies --no-color)  [boolean] [default: false]',
+  '  -n, --dry-run        prevents changes to package.json  [boolean] [default: true]',
+  '  -u, --update         applies changes to package.json  [boolean] [default: false]',
+  '      --ignore-stars   ignore updates to packages that are set to "*"  [boolean]',
+  '      --ignore-pegged  ignore updates to packages that are pegged to a single version, rather than a range  [boolean]',
+  '  -o, --only-changed   only show packages that have (or would have) changed  [boolean] [default: false]',
+  '  -c, --check          implies --dry-run and --no-update, and returns with an exit code matching the number of updated dependencies  [boolean] [default: false]',
+  '  -h, --help           Show help  [boolean]',
+  '  -v, --version        Show version number  [boolean]',
+].join('\n');
 
 /*
- * Boxed on purpose: as `yargs` defaults, these are identity-distinguishable from
- * an explicitly passed `--update`/`--no-update`, which `checkContradictions` needs.
- * Unboxing them to `false`/`true` would silently break that.
+ * `update` and `dry-run` deliberately have no `default`: `undefined` is what
+ * distinguishes "not passed" from an explicit `--no-update`/`--no-dry-run`,
+ * which `checkContradictions` depends on.
  */
-const FALSE = Object(false);
-const TRUE = Object(true);
-
-/** @type {(value: unknown) => unknown} */
-const boolishToBool = function boolishToBool(value) {
-  if (value === FALSE) { return false; }
-  if (value === TRUE) { return true; }
-  return value;
+/** @type {NonNullable<import('util').ParseArgsConfig['options']>} */
+const config = {
+  color: { type: 'boolean', default: true },
+  json: { type: 'boolean', default: false },
+  'dry-run': { type: 'boolean', short: 'n' },
+  update: { type: 'boolean', short: 'u' },
+  'ignore-stars': { type: 'boolean' },
+  'ignore-pegged': { type: 'boolean' },
+  'only-changed': {
+    type: 'boolean',
+    short: 'o',
+    default: false,
+  },
+  check: {
+    type: 'boolean',
+    short: 'c',
+    default: false,
+  },
+  help: { type: 'boolean', short: 'h' },
+  version: { type: 'boolean', short: 'v' },
 };
 
-/** @type {(argv: Record<string, unknown>) => true} */
-const checkContradictions = function checkContradictions(argv) {
-  /* eslint no-throw-literal: 0 */
-  if (argv.update === true && argv.check === true) {
-    throw 'Error: --update and --check are mutually exclusive';
+/** @type {(values: Record<string, boolean | undefined>) => void} */
+const checkContradictions = function checkContradictions(values) {
+  if (values.update === true && values.check === true) {
+    throw new RangeError('Error: --update and --check are mutually exclusive');
   }
-  if (argv.check !== true && argv.update === false && argv['dry-run'] === false) {
-    throw 'Error: --no-update and --no-dry-run are mutually exclusive';
+  if (values.check !== true && values.update === false && values['dry-run'] === false) {
+    throw new RangeError('Error: --no-update and --no-dry-run are mutually exclusive');
   }
-  if (argv.check === true && argv.update !== true && argv['dry-run'] === false) {
-    throw 'Error: --check and --no-dry-run are mutually exclusive';
+  if (values.check === true && values.update !== true && values['dry-run'] === false) {
+    throw new RangeError('Error: --check and --no-dry-run are mutually exclusive');
   }
-  if (argv.update === true && argv['dry-run'] === true) {
-    throw 'Error: --update and --dry-run are mutually exclusive';
+  if (values.update === true && values['dry-run'] === true) {
+    throw new RangeError('Error: --update and --dry-run are mutually exclusive');
   }
-  return true;
 };
 
-/* eslint newline-per-chained-call: 0 */
-/** @type {(args: string[]) => Record<string, any>} */
-module.exports = function parseOptions(args) {
+/** @type {(args: string[]) => Record<string, boolean>} */
+function parseOptions(args) {
   // eslint-disable-next-line no-extra-parens
-  const options = /** @type {Record<string, any>} */ (/** @type {unknown} */ (yargs(args)
-    .boolean('color').default('color', TRUE).describe('color', 'colorizes output')
-    .describe('no-color', 'prevents colorized output')
-    .boolean('json').describe('json', 'provides parseable JSON output (implies --no-color)')
-    .default('json', FALSE)
-    .boolean('dry-run').describe('dry-run', 'prevents changes to package.json')
-    .default('dry-run', TRUE).alias('dry-run', 'n')
-    .boolean('update').describe('update', 'applies changes to package.json')
-    .default('update', FALSE).alias('update', 'u')
-    .boolean('ignore-stars').describe('ignore-stars', 'ignore updates to packages that are set to "*"')
-    .boolean('ignore-pegged').describe('ignore-pegged', 'ignore updates to packages that are pegged to a single version, rather than a range')
-    .boolean('only-changed').describe('only-changed', 'only show packages that have (or would have) changed')
-    .default('only-changed', FALSE).alias('only-changed', 'o')
-    .boolean('check').describe('check', 'implies --dry-run and --no-update, and returns with an exit code matching the number of updated dependencies')
-    .default('check', FALSE).alias('check', 'c')
-    .help().alias('help', 'h')
-    .version(version).alias('version', 'v')
-    .strict()
-    .wrap(null)
-    .check(checkContradictions)
-    .argv));
+  const { values } = /** @type {{ values: Record<string, boolean | undefined> }} */ (/** @type {unknown} */ (parseArgs({
+    allowNegative: true,
+    args,
+    options: config,
+    strict: true,
+  })));
 
-  const persists = options.check !== true && (options.update === true || options['dry-run'] === false);
+  checkContradictions(values);
 
-  forEach(options, (value, key) => {
-    options[key] = boolishToBool(value);
-  });
+  const persists = values.check !== true && (values.update === true || values['dry-run'] === false);
 
-  options['dry-run'] = !persists;
-  options.update = persists;
+  // eslint-disable-next-line no-extra-parens
+  const options = /** @type {Record<string, boolean>} */ (/** @type {unknown} */ ({
+    ...values,
+    'dry-run': !persists,
+    update: persists,
+  }));
 
   if (options.json) { options.color = false; }
 
   return options;
-};
+}
+
+module.exports = { helpText, parseOptions };
