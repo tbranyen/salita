@@ -8,6 +8,8 @@ const path = require('path');
 
 const BIN = path.join(__dirname, '..', 'bin', 'salita');
 
+const ANSI = /\[\d+m/;
+
 /*
  * `salita` shells out to `npm show` and `npm config get save-prefix`; a stub
  * earlier on `PATH` keeps these tests offline and deterministic.
@@ -38,13 +40,14 @@ function createFixture(deps, latest) {
   return dir;
 }
 
-/** @type {(dir: string, args: string[]) => { status: number | null, stdout: string, stderr: string }} */
-function runSalita(dir, args) {
+/** @type {(dir: string, args: string[], env?: Record<string, string>) => { status: number | null, stdout: string, stderr: string }} */
+function runSalita(dir, args, env) {
   return spawnSync(process.execPath, [BIN].concat(args), {
     cwd: dir,
     encoding: 'utf8',
     env: {
       ...process.env,
+      ...env,
       PATH: `${path.join(dir, 'stub')}${path.delimiter}${process.env.PATH || ''}`,
     },
   });
@@ -130,6 +133,35 @@ test('--check exits with the number of updatable dependencies', (t) => {
 
   t.equal(result.status, 1, 'exits with a status matching the updatable count');
   t.deepEqual(readDeps(dir), { 'fake-pkg': '^1.0.0' }, 'the dependency is left alone');
+  t.end();
+});
+
+test('--no-color suppresses colors', (t) => {
+  const dir = fixture(t);
+
+  const result = runSalita(dir, ['--no-color'], { FORCE_COLOR: '1' });
+
+  t.equal(result.status, 0, 'exits with a zero status');
+  t.doesNotMatch(result.stdout, ANSI, 'emits no ANSI escapes');
+  t.end();
+});
+
+test('colors are emitted by default', (t) => {
+  const dir = fixture(t);
+
+  const result = runSalita(dir, [], { FORCE_COLOR: '1' });
+
+  t.match(result.stdout, ANSI, 'emits ANSI escapes');
+  t.end();
+});
+
+test('--json output is uncolored and parseable', (t) => {
+  const dir = fixture(t);
+
+  const result = runSalita(dir, ['--json'], { FORCE_COLOR: '1' });
+
+  t.doesNotMatch(result.stdout, ANSI, 'emits no ANSI escapes');
+  t.doesNotThrow(() => { JSON.parse(result.stdout); }, 'stdout is valid JSON');
   t.end();
 });
 

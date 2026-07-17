@@ -11,6 +11,7 @@ declare namespace salita {
 	export type Version = `${'v' | ''}${number}.${number}.${number}`;
 
 	export type Options = {
+		'color'?: boolean;
 		'dry-run'?: boolean;
 		'json'?: boolean;
 		'ignore-pegged'?: boolean;

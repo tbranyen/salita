@@ -41,58 +41,60 @@ const createResultJSON = function (key, onlyChanged) {
   };
 };
 
-/** @type {(caption: string, onlyChanged: boolean) => (results: import('.').Result[]) => (string | Table)[]} */
-function createResultTable(caption, onlyChanged) {
+/** @type {(caption: string, onlyChanged: boolean, color: boolean) => (results: import('.').Result[]) => (string | Table)[]} */
+function createResultTable(caption, onlyChanged, color) {
+  /** @type {typeof styleText} */
+  const style = color ? styleText : (format, text) => text;
   return function (results) {
     const table = getTable();
     if (results.length > 0) {
       const tableRows = results.map((result) => {
         if (result.isChanged) {
           return [
-            styleText('green', 'Changed: '),
+            style('green', 'Changed: '),
             result.name,
             'from',
-            styleText('yellow', result.before),
+            style('yellow', result.before),
             'to',
-            styleText('yellow', result.after),
+            style('yellow', result.after),
           ];
         }
         if (result.error) {
           return [
-            styleText('red', 'Package not found: '),
+            style('red', 'Package not found: '),
             result.name,
             'at',
-            styleText('yellow', result.before),
-            styleText('bold', styleText('red', '?')),
+            style('yellow', result.before),
+            style('bold', style('red', '?')),
           ];
         }
         if (!result.isUpdateable && !result.isStar && !result.isPegged) {
           return [
-            styleText('red', 'Requested range not satisfied by: '),
+            style('red', 'Requested range not satisfied by: '),
             result.name,
             'from',
-            styleText('yellow', result.before),
+            style('yellow', result.before),
             'to',
-            styleText('yellow', result.after),
+            style('yellow', result.after),
           ];
         }
         if (onlyChanged) {
           return null;
         }
         return [
-          styleText('blue', 'Kept: '),
+          style('blue', 'Kept: '),
           result.name,
           'at',
-          styleText('yellow', result.before),
+          style('yellow', result.before),
         ];
       }).filter((x) => !!x);
       table.push(...tableRows);
       table.sort(/** @type {(a: string[], b: string[]) => number} */ (a, b) => a[1].localeCompare(b[1]));
     } else {
-      table.push([styleText('gray', 'None found')]);
+      table.push([style('gray', 'None found')]);
     }
     return [
-      styleText('green', styleText('underline', `${caption}:`)),
+      style('green', style('underline', `${caption}:`)),
       table,
     ];
   };
@@ -138,7 +140,7 @@ export default async function salita(dir, options) {
     depLookups.push(depLookup);
     const create = options.json
       ? createResultJSON(key, onlyChanged)
-      : createResultTable(title, onlyChanged);
+      : createResultTable(title, onlyChanged, options.color !== false);
     depPromises.push(depLookup.then((y) => create(y)));
   });
 
