@@ -83,6 +83,16 @@ test('-u persists changes to package.json', (t) => {
   t.end();
 });
 
+test('--no-dry-run persists changes to package.json', (t) => {
+  const dir = fixture(t);
+
+  const result = runSalita(dir, ['--no-dry-run']);
+
+  t.equal(result.status, 0, 'exits with a zero status');
+  t.deepEqual(readDeps(dir), { 'fake-pkg': '^2.0.0' }, 'the dependency is updated on disk');
+  t.end();
+});
+
 test('without --update, changes are not persisted', (t) => {
   const dir = fixture(t);
 

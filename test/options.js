@@ -37,6 +37,38 @@ test('--dry-run', (t) => {
   t.end();
 });
 
+test('--no-dry-run', (t) => {
+  const options = parseOptions(['--no-dry-run']);
+
+  t.equal(options.update, true, 'updates');
+  t.equal(options['dry-run'], false, 'is not a dry run');
+  t.end();
+});
+
+test('--no-update', (t) => {
+  const options = parseOptions(['--no-update']);
+
+  t.equal(options.update, false, 'does not update');
+  t.equal(options['dry-run'], true, 'is a dry run');
+  t.end();
+});
+
+test('--update --no-dry-run agree, and persist', (t) => {
+  const options = parseOptions(['--update', '--no-dry-run']);
+
+  t.equal(options.update, true, 'updates');
+  t.equal(options['dry-run'], false, 'is not a dry run');
+  t.end();
+});
+
+test('--no-update --dry-run agree, and do not persist', (t) => {
+  const options = parseOptions(['--no-update', '--dry-run']);
+
+  t.equal(options.update, false, 'does not update');
+  t.equal(options['dry-run'], true, 'is a dry run');
+  t.end();
+});
+
 test('--check', (t) => {
   const options = parseOptions(['--check']);
 

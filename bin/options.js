@@ -64,18 +64,15 @@ module.exports = function parseOptions(args) {
     .check(checkContradictions)
     .argv));
 
+  const persists = options.check !== true && (options.update === true || options['dry-run'] === false);
+
   forEach(options, (value, key) => {
     options[key] = boolishToBool(value);
   });
 
-  if (options.update) {
-    options['dry-run'] = false;
-  }
+  options['dry-run'] = !persists;
+  options.update = persists;
 
-  if (options['dry-run'] || !options.update || options.check) {
-    options['dry-run'] = true;
-    options.update = false;
-  }
   if (options.json) { options.color = false; }
 
   return options;
