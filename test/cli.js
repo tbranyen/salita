@@ -104,6 +104,25 @@ test('--dry-run does not persist changes', (t) => {
   t.end();
 });
 
+test('a summary of the changes is reported', (t) => {
+  const dir = fixture(t);
+
+  const result = runSalita(dir, ['--update']);
+
+  t.match(result.stderr, /1 updated out of 1 total dependencies/, 'reports how many changed');
+  t.end();
+});
+
+test('--check exits with the number of updatable dependencies', (t) => {
+  const dir = fixture(t);
+
+  const result = runSalita(dir, ['--check']);
+
+  t.equal(result.status, 1, 'exits with a status matching the updatable count');
+  t.deepEqual(readDeps(dir), { 'fake-pkg': '^1.0.0' }, 'the dependency is left alone');
+  t.end();
+});
+
 test('--update and --dry-run are mutually exclusive', (t) => {
   const dir = fixture(t);
 

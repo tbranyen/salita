@@ -14,14 +14,12 @@ if (!options.update) {
   console.warn('Running in dry-run mode. Use --update to persist changes to package.json.');
 }
 
-salita(process.cwd(), options, (countsPromise) => {
-  countsPromise.then((counts) => {
-    const sums = counts.reduce((acc, category) => [acc[0] + category[0], acc[1] + category[1]], [0, 0]);
-    const total = sums[0];
-    const changed = sums[1];
-    if (!options.json) {
-      console.error(`\n${changed} updated out of ${total} total dependencies.`);
-    }
-    if (options.check) { process.exit(changed); }
-  });
+salita(process.cwd(), options).then((counts) => {
+  const sums = counts.reduce((acc, category) => [acc[0] + category[0], acc[1] + category[1]], [0, 0]);
+  const total = sums[0];
+  const changed = sums[1];
+  if (!options.json) {
+    console.error(`\n${changed} updated out of ${total} total dependencies.`);
+  }
+  if (options.check) { process.exit(changed); }
 });
