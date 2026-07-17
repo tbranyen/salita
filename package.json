@@ -14,6 +14,8 @@
 		"pretest": "npm run --silent lint",
 		"lint": "eslint --ext=js,mjs . 'bin/**'",
 		"postlint": "tsc && attw -P",
+		"test": "npm run tests-only",
+		"tests-only": "tape 'test/**/*.js'",
 		"posttest": "npx npm@\">= 10.2\" audit --production",
 		"version": "auto-changelog && git add CHANGELOG.md",
 		"postversion": "auto-changelog && git add CHANGELOG.md && git commit --no-edit --amend && git tag -f \"v$(node -e \"console.log(require('./package.json').version)\")\""
@@ -39,9 +41,12 @@
 		"@ljharb/tsconfig": "^0.3.2",
 		"@types/cli-table": "^0.3.4",
 		"@types/eslint": "^8.56.12",
+		"@types/node": "^26.1.1",
 		"@types/semver": "^6.2.7",
+		"@types/yargs": "^17.0.35",
 		"auto-changelog": "^2.6.0",
 		"eslint": "^8.57.1",
+		"tape": "^5.10.2",
 		"typescript": "next"
 	},
 	"engines": {
