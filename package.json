@@ -3,7 +3,7 @@
 	"bin": {
 		"salita": "bin/salita.mjs"
 	},
-	"version": "1.0.2",
+	"version": "2.0.0",
 	"description": "Automatically upgrade all dependencies, devDependencies, and peerDependencies",
 	"main": "index.js",
 	"exports": {

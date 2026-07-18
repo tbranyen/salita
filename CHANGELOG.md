@@ -5,6 +5,14 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [v2.0.0](https://github.com/tbranyen/salita/compare/v1.0.2...v2.0.0) - 2026-07-17
+
+### Commits
+
+- [Breaking] use `pargs`; require node `^24.18 || &gt;= 26.5` [`d4e3cff`](https://github.com/tbranyen/salita/commit/d4e3cfffc0ea3e733bba1a330f8d6b37766de294)
+- [Dev Deps] update `eslint` [`14018da`](https://github.com/tbranyen/salita/commit/14018da6c1405e303e3165201ea0561981eaa2b6)
+- [meta] rerun dt-clean --setup [`3e6e0fc`](https://github.com/tbranyen/salita/commit/3e6e0fcc93002a114d8de6edf7790cd7f6eabe72)
+
 ## [v1.0.2](https://github.com/tbranyen/salita/compare/v1.0.1...v1.0.2) - 2026-07-16
 
 ### Commits
