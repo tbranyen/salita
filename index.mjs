@@ -133,7 +133,7 @@ export default async function salita(dir, options) {
   const depPromises = [];
   forEach(deps, (title, key) => {
     const depLookup = Promise.all(dependenciesLookup(
-      // eslint-disable-next-line no-extra-parens
+
       pkg.data,
       key,
       !!options['ignore-stars'],
@@ -150,7 +150,7 @@ export default async function salita(dir, options) {
   const depResults = await Promise.all(depPromises);
   if (options.json) {
     /** @type {ReturnType<ResultJSON>[]} */
-    // eslint-disable-next-line no-extra-parens
+
     const jsonResults = depResults;
     /** @type {ReturnType<ResultJSON>} */
     const smooshed = { ...jsonResults };
@@ -185,7 +185,7 @@ function isVersionPegged(version) {
   try {
     const range = new semver.Range(version);
     return range.set.every((comparators) => comparators.length === 1 && String(comparators[0].operator || '') === '');
-  } catch (err) {
+  } catch {
     /*
      * semver.Range doesn't support all version specifications (like git
      * references), so if it raises an error, assume the dep can be left
@@ -242,19 +242,43 @@ function dependenciesLookup(pkg, type, ignoreStars, ignorePegged) {
       return true;
     });
   }
+
+  /** @type {LookupDistTags} */
+  async function lookupDistTags(name) {
+    const pPrefix = new Promise((resolve, reject) => {
+      exec('npm config get save-prefix --no-workspaces', (err, prefix) => {
+        if (err) {
+          reject(err);
+        } else {
+          resolve(prefix.trim());
+        }
+      });
+    });
+    const pTags = new Promise((resolve, reject) => {
+      exec(`npm show --json ${JSON.stringify(name)} dist-tags`, (err, tags) => {
+        if (err) {
+          reject(err);
+        } else {
+          resolve(JSON.parse(tags));
+        }
+      });
+    });
+
+    return Promise.all([pPrefix, pTags]);
+  }
+
   /** @type {(name: string) => Promise<Result>} */
   async function mapNameToLatest(name) {
     const existing = pkg[type][name];
     try {
       const [prefix, distTags] = await lookupDistTags(name);
 
-      // eslint-disable-next-line no-extra-parens
-      const { latest: version } = /** @type {NonNullable<typeof distTags>} */ (distTags);
+      const { latest: version } = distTags;
       let isUpdateable = false;
       try {
         const range = new semver.Range(existing);
         isUpdateable = !semver.ltr(version, range);
-      } catch (e) { /**/ }
+      } catch { /**/ }
       const updated = prefix + version;
 
       // If there is no version or the version is the latest.
@@ -284,28 +308,4 @@ function dependenciesLookup(pkg, type, ignoreStars, ignorePegged) {
     }
   }
   return names.map(mapNameToLatest).concat(untouched);
-}
-
-/** @type {LookupDistTags} */
-async function lookupDistTags(name) {
-  const pPrefix = new Promise((resolve, reject) => {
-    exec('npm config get save-prefix --no-workspaces', (err, prefix) => {
-      if (err) {
-        reject(err);
-      } else {
-        resolve(prefix.trim());
-      }
-    });
-  });
-  const pTags = new Promise((resolve, reject) => {
-    exec(`npm show --json ${JSON.stringify(name)} dist-tags`, (err, tags) => {
-      if (err) {
-        reject(err);
-      } else {
-        resolve(JSON.parse(tags));
-      }
-    });
-  });
-
-  return Promise.all([pPrefix, pTags]);
 }

@@ -20,24 +20,22 @@ export const config = {
     },
     'dry-run': {
       type: 'boolean',
-      default: false,
       short: 'n',
       description: 'prevents changes to package.json',
     },
     update: {
       type: 'boolean',
       short: 'u',
-      default: false,
       description: 'applies changes to package.json',
     },
     'ignore-stars': {
       type: 'boolean',
-      description: 'ignore updates to packages that are set to "*"'
+      description: 'ignore updates to packages that are set to "*"',
     },
     'ignore-pegged': {
       type: 'boolean',
       default: false,
-      description: 'ignore updates to packages that are pegged to a single version, rather than a range'
+      description: 'ignore updates to packages that are pegged to a single version, rather than a range',
     },
     'only-changed': {
       type: 'boolean',
@@ -78,7 +76,6 @@ export function contradictions(values) {
 export function normalize(values) {
   const persists = values.check !== true && (values.update === true || values['dry-run'] === false);
 
-  // eslint-disable-next-line no-extra-parens
   const options = /** @type {Record<string, boolean>} */ (/** @type {unknown} */ ({
     ...values,
     'dry-run': !persists,
