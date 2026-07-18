@@ -6,7 +6,7 @@ const fs = require('fs');
 const os = require('os');
 const path = require('path');
 
-const BIN = path.join(__dirname, '..', 'bin', 'salita');
+const BIN = path.join(__dirname, '..', 'bin', 'salita.mjs');
 
 const ANSI = /\[\d+m/;
 
@@ -176,13 +176,23 @@ test('--update and --dry-run are mutually exclusive', (t) => {
   t.end();
 });
 
+test('multiple contradictions still exit 1', (t) => {
+  const dir = fixture(t);
+
+  const result = runSalita(dir, ['--update', '--check', '--dry-run']);
+
+  t.equal(result.status, 1, 'exits 1, not a count of the errors');
+  t.match(result.stderr, /--update and --check are mutually exclusive/, 'reports a contradiction');
+  t.end();
+});
+
 test('--help describes the options, without updating anything', (t) => {
   const dir = fixture(t);
 
   const result = runSalita(dir, ['--help']);
 
   t.equal(result.status, 0, 'exits with a zero status');
-  t.match(result.stdout, /--update/, 'documents --update');
+  t.match(result.stdout, /-u, --\[no-\]update/, 'documents --update and its short flag');
   t.deepEqual(readDeps(dir), { 'fake-pkg': '^1.0.0' }, 'the dependency is left alone');
   t.end();
 });

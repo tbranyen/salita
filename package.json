@@ -1,7 +1,7 @@
 {
 	"name": "salita",
 	"bin": {
-		"salita": "bin/salita"
+		"salita": "bin/salita.mjs"
 	},
 	"version": "1.0.2",
 	"description": "Automatically upgrade all dependencies, devDependencies, and peerDependencies",
@@ -35,6 +35,7 @@
 		"cli-table": "^0.3.11",
 		"for-each": "^0.3.5",
 		"json-file-plus": "^4.0.1",
+		"pargs": "^1.4.2",
 		"semver": "^7.8.5"
 	},
 	"devDependencies": {
@@ -52,7 +53,7 @@
 		"typescript": "next"
 	},
 	"engines": {
-		"node": ">= 24.3"
+		"node": "^24.18 || >= 26.5"
 	},
 	"author": "Tim Branyen (@tbranyen)",
 	"license": "MIT",

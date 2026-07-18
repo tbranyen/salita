@@ -1,5 +1,3 @@
-declare function lookupDistTags(name: string): Promise<[prefix: string, distTags: Record<string, salita.Version>]>;
-
 declare namespace salita {
 	export type DepKey =
 		| 'dependencies'
@@ -19,7 +17,10 @@ declare namespace salita {
 		'only-changed'?: boolean;
 	};
 
-	export type LookupDistTags = typeof lookupDistTags;
+	export type LookupDistTags = (name: string) => Promise<[
+		prefix: string,
+		distTags: Record<string, Version>,
+	]>;
 
 	export type Result = {
 		after: string;
@@ -33,6 +34,10 @@ declare namespace salita {
 	};
 }
 
-declare function salita(dir: string, options: salita.Options): Promise<[number, number][]>;
+declare function salita(dir: string, options: salita.Options): Promise<[
+	number,
+	number,
+][]>;
 
-export = salita;
+export default salita;
+export { salita as 'module.exports' };

@@ -2,10 +2,10 @@
 
 const test = require('tape');
 
-const { parseOptions } = require('../bin/options');
+const { contradictions, normalize } = require('../bin/options.mjs');
 
 test('no flags', (t) => {
-  const options = parseOptions([]);
+  const options = normalize({ check: false, color: true, json: false });
 
   t.equal(options.update, false, 'does not update');
   t.equal(options['dry-run'], true, 'is a dry run');
@@ -14,15 +14,7 @@ test('no flags', (t) => {
 });
 
 test('--update', (t) => {
-  const options = parseOptions(['--update']);
-
-  t.equal(options.update, true, 'updates');
-  t.equal(options['dry-run'], false, 'is not a dry run');
-  t.end();
-});
-
-test('-u', (t) => {
-  const options = parseOptions(['-u']);
+  const options = normalize({ check: false, update: true });
 
   t.equal(options.update, true, 'updates');
   t.equal(options['dry-run'], false, 'is not a dry run');
@@ -30,7 +22,7 @@ test('-u', (t) => {
 });
 
 test('--dry-run', (t) => {
-  const options = parseOptions(['--dry-run']);
+  const options = normalize({ check: false, 'dry-run': true });
 
   t.equal(options.update, false, 'does not update');
   t.equal(options['dry-run'], true, 'is a dry run');
@@ -38,7 +30,7 @@ test('--dry-run', (t) => {
 });
 
 test('--no-dry-run', (t) => {
-  const options = parseOptions(['--no-dry-run']);
+  const options = normalize({ check: false, 'dry-run': false });
 
   t.equal(options.update, true, 'updates');
   t.equal(options['dry-run'], false, 'is not a dry run');
@@ -46,7 +38,7 @@ test('--no-dry-run', (t) => {
 });
 
 test('--no-update', (t) => {
-  const options = parseOptions(['--no-update']);
+  const options = normalize({ check: false, update: false });
 
   t.equal(options.update, false, 'does not update');
   t.equal(options['dry-run'], true, 'is a dry run');
@@ -54,7 +46,7 @@ test('--no-update', (t) => {
 });
 
 test('--update --no-dry-run agree, and persist', (t) => {
-  const options = parseOptions(['--update', '--no-dry-run']);
+  const options = normalize({ check: false, 'dry-run': false, update: true });
 
   t.equal(options.update, true, 'updates');
   t.equal(options['dry-run'], false, 'is not a dry run');
@@ -62,39 +54,15 @@ test('--update --no-dry-run agree, and persist', (t) => {
 });
 
 test('--no-update --dry-run agree, and do not persist', (t) => {
-  const options = parseOptions(['--no-update', '--dry-run']);
+  const options = normalize({ check: false, 'dry-run': true, update: false });
 
   t.equal(options.update, false, 'does not update');
   t.equal(options['dry-run'], true, 'is a dry run');
   t.end();
 });
 
-test('contradictory flags throw', (t) => {
-  t.throws(
-    () => { parseOptions(['--update', '--dry-run']); },
-    /--update and --dry-run are mutually exclusive/,
-    '--update and --dry-run',
-  );
-  t.throws(
-    () => { parseOptions(['--no-update', '--no-dry-run']); },
-    /--no-update and --no-dry-run are mutually exclusive/,
-    '--no-update and --no-dry-run',
-  );
-  t.throws(
-    () => { parseOptions(['--check', '--no-dry-run']); },
-    /--check and --no-dry-run are mutually exclusive/,
-    '--check and --no-dry-run',
-  );
-  t.throws(
-    () => { parseOptions(['--update', '--check']); },
-    /--update and --check are mutually exclusive/,
-    '--update and --check',
-  );
-  t.end();
-});
-
-test('--check', (t) => {
-  const options = parseOptions(['--check']);
+test('--check never persists', (t) => {
+  const options = normalize({ check: true });
 
   t.equal(options.check, true, 'checks');
   t.equal(options.update, false, 'does not update');
@@ -103,19 +71,43 @@ test('--check', (t) => {
 });
 
 test('--json implies --no-color', (t) => {
-  const options = parseOptions(['--json']);
+  const options = normalize({ check: false, color: true, json: true });
 
   t.equal(options.json, true, 'is json');
   t.equal(options.color, false, 'is not colorized');
   t.end();
 });
 
-test('booleans are unboxed', (t) => {
-  const options = parseOptions([]);
+test('agreeable flags are not contradictions', (t) => {
+  t.deepEqual(contradictions({ check: false }), [], 'no flags');
+  t.deepEqual(contradictions({ check: false, update: true }), [], '--update');
+  t.deepEqual(contradictions({ check: false, 'dry-run': false }), [], '--no-dry-run');
+  t.deepEqual(contradictions({ check: false, 'dry-run': false, update: true }), [], '--update --no-dry-run');
+  t.deepEqual(contradictions({ check: false, 'dry-run': true, update: false }), [], '--no-update --dry-run');
+  t.deepEqual(contradictions({ check: true }), [], '--check');
+  t.end();
+});
 
-  t.equal(typeof options.update, 'boolean', 'update is a primitive boolean');
-  t.equal(typeof options['dry-run'], 'boolean', 'dry-run is a primitive boolean');
-  t.equal(typeof options.check, 'boolean', 'check is a primitive boolean');
-  t.equal(typeof options.color, 'boolean', 'color is a primitive boolean');
+test('contradictory flags are reported', (t) => {
+  t.deepEqual(
+    contradictions({ check: false, 'dry-run': true, update: true }),
+    ['Error: --update and --dry-run are mutually exclusive'],
+    '--update and --dry-run',
+  );
+  t.deepEqual(
+    contradictions({ check: false, 'dry-run': false, update: false }),
+    ['Error: --no-update and --no-dry-run are mutually exclusive'],
+    '--no-update and --no-dry-run',
+  );
+  t.deepEqual(
+    contradictions({ check: true, 'dry-run': false }),
+    ['Error: --check and --no-dry-run are mutually exclusive'],
+    '--check and --no-dry-run',
+  );
+  t.deepEqual(
+    contradictions({ check: true, update: true }),
+    ['Error: --update and --check are mutually exclusive'],
+    '--update and --check',
+  );
   t.end();
 });

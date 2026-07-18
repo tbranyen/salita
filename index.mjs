@@ -34,14 +34,16 @@ function getTable() {
   });
 }
 
-/** @type {(key: string, onlyChanged: boolean) => (results: import('.').Result[]) => Record<string, import('.').Result[]>} */
+/** @import { DepKey, LookupDistTags, Result } from './index.d.mts' */
+
+/** @type {(key: string, onlyChanged: boolean) => (results: Result[]) => Record<string, Result[]>} */
 const createResultJSON = function (key, onlyChanged) {
   return function (results) {
     return { [key]: results.filter((result) => !onlyChanged || result.isChanged) };
   };
 };
 
-/** @type {(caption: string, onlyChanged: boolean, color: boolean) => (results: import('.').Result[]) => (string | Table)[]} */
+/** @type {(caption: string, onlyChanged: boolean, color: boolean) => (results: Result[]) => (string | Table)[]} */
 function createResultTable(caption, onlyChanged, color) {
   /** @type {typeof styleText} */
   const style = color ? styleText : (format, text) => text;
@@ -89,7 +91,7 @@ function createResultTable(caption, onlyChanged, color) {
         ];
       }).filter((x) => !!x);
       table.push(...tableRows);
-      table.sort(/** @type {(a: string[], b: string[]) => number} */ (a, b) => a[1].localeCompare(b[1]));
+      table.sort((a, b) => a[1].localeCompare(b[1]));
     } else {
       table.push([style('gray', 'None found')]);
     }
@@ -111,7 +113,7 @@ export default async function salita(dir, options) {
 
   const onlyChanged = !!options['only-changed'];
 
-  /** @type {Record<import('.').DepKey, string>} */
+  /** @type {Record<DepKey, string>} */
   const deps = {
     dependencies: 'Dependencies',
     devDependencies: 'Development Dependencies',
@@ -125,14 +127,14 @@ export default async function salita(dir, options) {
   /** @typedef {ResultJSON | ResultTable} CreateResult */
   /** @typedef {ReturnType<CreateResult>} DepResult */
 
-  /** @type {Promise<import('.').Result[]>[]} */
+  /** @type {Promise<Result[]>[]} */
   const depLookups = [];
   /** @type {Promise<DepResult>[]} */
   const depPromises = [];
   forEach(deps, (title, key) => {
     const depLookup = Promise.all(dependenciesLookup(
       // eslint-disable-next-line no-extra-parens
-      /** @type {Parameters<typeof dependenciesLookup>[0]} */ (pkg.data),
+      pkg.data,
       key,
       !!options['ignore-stars'],
       !!options['ignore-pegged'],
@@ -147,22 +149,21 @@ export default async function salita(dir, options) {
   // Wait for all of them to resolve.
   const depResults = await Promise.all(depPromises);
   if (options.json) {
+    /** @type {ReturnType<ResultJSON>[]} */
     // eslint-disable-next-line no-extra-parens
-    const jsonResults = /** @type {ReturnType<ResultJSON>[]} */ (depResults);
+    const jsonResults = depResults;
     /** @type {ReturnType<ResultJSON>} */
-    const smooshed = Object.assign({}, ...jsonResults);
+    const smooshed = { ...jsonResults };
     console.log(JSON.stringify(smooshed, null, 2));
   } else {
-    // eslint-disable-next-line no-extra-parens
-    const tableResults = /** @type {ReturnType<ResultTable>[]} */ (/** @type {unknown} */ (depResults));
-    tableResults.forEach((results) => {
+    depResults.forEach((results) => {
       results.map(String).forEach((result) => {
         console.log(result);
       });
     });
   }
 
-  /** @type {(results: import('.').Result[]) => [number, number]} */
+  /** @type {(results: Result[]) => [number, number]} */
   function getDepCounts(results) {
     const totalDeps = results.length;
     const changedDeps = results.filter((result) => result.isChanged).length;
@@ -198,11 +199,11 @@ function isVersionPegged(version) {
  * createDependenciesLookup
  *
  * @type {(
- *   pkg: Record<import('.').DepKey, Record<string, string>>,
- *   type: import('.').DepKey,
+ *   pkg: Record<DepKey, Record<string, string>>,
+ *   type: DepKey,
  *   ignoreStars: boolean,
  *   ignorePegged: boolean,
- * ) => Promise<import('.').Result>[]}
+ * ) => Promise<Result>[]}
  * @return
  */
 function dependenciesLookup(pkg, type, ignoreStars, ignorePegged) {
@@ -213,10 +214,10 @@ function dependenciesLookup(pkg, type, ignoreStars, ignorePegged) {
 
   // Loop through and map the "lookup latest" to promises.
   let names = Object.keys(pkg[type] || []);
-  /** @type {Promise<import('.').Result>[]} */
+  /** @type {Promise<Result>[]} */
   const untouched = [];
   /** @type {(name: string, version: string, flags: { isStar?: true, isPegged?: true }) => void} */
-  const addUntouched = function (name, version, flags) {
+  function addUntouched(name, version, flags) {
     untouched.push(Promise.resolve({
       after: version,
       before: version,
@@ -225,7 +226,7 @@ function dependenciesLookup(pkg, type, ignoreStars, ignorePegged) {
       name,
       ...flags,
     }));
-  };
+  }
   if (ignoreStars || ignorePegged) {
     names = names.filter((name) => {
       const version = pkg[type][name];
@@ -241,7 +242,7 @@ function dependenciesLookup(pkg, type, ignoreStars, ignorePegged) {
       return true;
     });
   }
-  /** @type {(name: string) => Promise<import('.').Result>} */
+  /** @type {(name: string) => Promise<Result>} */
   async function mapNameToLatest(name) {
     const existing = pkg[type][name];
     try {
@@ -285,7 +286,7 @@ function dependenciesLookup(pkg, type, ignoreStars, ignorePegged) {
   return names.map(mapNameToLatest).concat(untouched);
 }
 
-/** @type {import('.').LookupDistTags} */
+/** @type {LookupDistTags} */
 async function lookupDistTags(name) {
   const pPrefix = new Promise((resolve, reject) => {
     exec('npm config get save-prefix --no-workspaces', (err, prefix) => {
