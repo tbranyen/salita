@@ -4,7 +4,7 @@ import jsonFile from 'json-file-plus';
 import Table from 'cli-table';
 import semver from 'semver';
 import forEach from 'for-each';
-import { styleText } from 'util';
+import { inspect, styleText } from 'util';
 
 /** @template Type @typedef {Type extends Table<infer X> ? X : never} extractGeneric<Type> */
 
@@ -59,6 +59,15 @@ function createResultTable(caption, onlyChanged, color) {
             style('yellow', result.before),
             'to',
             style('yellow', result.after),
+          ];
+        }
+        if (result.isInvalid) {
+          return [
+            style('red', 'Invalid version reported for: '),
+            result.name,
+            'at',
+            style('yellow', result.before),
+            style('red', result.error ? result.error.message : ''),
           ];
         }
         if (result.error) {
@@ -259,7 +268,17 @@ function dependenciesLookup(pkg, type, ignoreStars, ignorePegged) {
         if (err) {
           reject(err);
         } else {
-          resolve(JSON.parse(tags));
+          try {
+            /*
+             * npm >= 12 emits one entry per matched version, so a lookup that
+             * resolves to a single version arrives wrapped in an array; npm
+             * <= 11 emits the bare object. Unwrap so both shapes agree.
+             */
+            const parsed = JSON.parse(tags);
+            resolve([].concat(parsed)[0]);
+          } catch (parseErr) {
+            reject(parseErr);
+          }
         }
       });
     });
@@ -274,6 +293,26 @@ function dependenciesLookup(pkg, type, ignoreStars, ignorePegged) {
       const [prefix, distTags] = await lookupDistTags(name);
 
       const { latest: version } = distTags;
+
+      /*
+       * `npm show --json <name> dist-tags` is expected to report a semver
+       * version for `latest`. When it does not - a registry that omits the
+       * tag, or an npm whose JSON shape we failed to unwrap - say so, rather
+       * than pasting the garbage onto the prefix and reporting a range like
+       * `^undefined` as though it were a real answer.
+       */
+      if (!semver.valid(version)) {
+        return {
+          after: existing,
+          before: existing,
+          error: new TypeError(`\`latest\` is ${inspect(version)}, which is not a valid semver version`),
+          isChanged: false,
+          isInvalid: true,
+          isUpdateable: false,
+          name,
+        };
+      }
+
       let isUpdateable = false;
       try {
         const range = new semver.Range(existing);

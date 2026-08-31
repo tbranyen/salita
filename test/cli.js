@@ -12,7 +12,8 @@ const ANSI = /\[\d+m/;
 
 /*
  * `salita` shells out to `npm show` and `npm config get save-prefix`; a stub
- * earlier on `PATH` keeps these tests offline and deterministic.
+ * earlier on `PATH` keeps these tests offline and deterministic. The stub
+ * speaks the npm <= 11 `dist-tags` shape; `npm.js` covers the real npms.
  */
 /** @type {(deps: Record<string, string>, latest: Record<string, string>) => string} */
 function createFixture(deps, latest) {
@@ -58,9 +59,9 @@ function readDeps(dir) {
   return JSON.parse(fs.readFileSync(path.join(dir, 'package.json'), 'utf8')).dependencies;
 }
 
-/** @type {(t: import('tape').Test) => string} */
-function fixture(t) {
-  const dir = createFixture({ 'fake-pkg': '^1.0.0' }, { 'fake-pkg': '2.0.0' });
+/** @type {(t: import('tape').Test, latest?: Record<string, string>) => string} */
+function fixture(t, latest) {
+  const dir = createFixture({ 'fake-pkg': '^1.0.0' }, latest || { 'fake-pkg': '2.0.0' });
   t.teardown(() => { fs.rmSync(dir, { force: true, recursive: true }); });
   return dir;
 }
@@ -194,5 +195,43 @@ test('--help describes the options, without updating anything', (t) => {
   t.equal(result.status, 0, 'exits with a zero status');
   t.match(result.stdout, /-u, --\[no-\]update/, 'documents --update and its short flag');
   t.deepEqual(readDeps(dir), { 'fake-pkg': '^1.0.0' }, 'the dependency is left alone');
+  t.end();
+});
+
+test('a non-semver `latest` is reported, not pasted onto the prefix', (t) => {
+  const dir = fixture(t, { 'fake-pkg': 'not-a-version' });
+
+  const result = runSalita(dir, ['--update']);
+
+  t.equal(result.status, 0, 'exits with a zero status');
+  t.match(result.stdout, /Invalid version reported for/, 'reports the version as invalid');
+  t.match(result.stdout, /not a valid semver version/, 'explains why it is invalid');
+  t.doesNotMatch(result.stdout, /\^not-a-version/, 'does not build a range out of it');
+  t.deepEqual(readDeps(dir), { 'fake-pkg': '^1.0.0' }, 'the dependency is left alone');
+  t.end();
+});
+
+test('a missing `latest` is reported, not pasted onto the prefix', (t) => {
+  const dir = fixture(t, {});
+
+  const result = runSalita(dir, ['--update']);
+
+  t.equal(result.status, 0, 'exits with a zero status');
+  t.match(result.stdout, /Invalid version reported for/, 'reports the version as invalid');
+  t.doesNotMatch(result.stdout, /\^undefined/, 'does not paste `undefined` onto the prefix');
+  t.deepEqual(readDeps(dir), { 'fake-pkg': '^1.0.0' }, 'the dependency is left alone');
+  t.end();
+});
+
+test('--json flags an invalid version', (t) => {
+  const dir = fixture(t, { 'fake-pkg': 'not-a-version' });
+
+  const result = runSalita(dir, ['--json']);
+
+  const [dependency] = JSON.parse(result.stdout)['0'].dependencies;
+
+  t.equal(dependency.isInvalid, true, 'flags the result as invalid');
+  t.equal(dependency.isChanged, false, 'does not claim to have changed anything');
+  t.equal(dependency.after, '^1.0.0', 'leaves the existing range as the answer');
   t.end();
 });

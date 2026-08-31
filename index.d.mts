@@ -29,6 +29,7 @@ export type Result = {
 	isUpdateable: boolean;
 	isStar?: boolean;
 	isPegged?: boolean;
+	isInvalid?: true;
 	name: string;
 };
 
