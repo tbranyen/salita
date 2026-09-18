@@ -5,6 +5,16 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [v2.0.1](https://github.com/tbranyen/salita/compare/v2.0.0...v2.0.1) - 2026-09-18
+
+### Commits
+
+- [Fix] handle the npm &gt;= 12 `dist-tags` shape, and reject a non-semver `latest` [`9955021`](https://github.com/tbranyen/salita/commit/99550217b2358b0e87f19aba91514c162b2ee07b)
+- [Dev Deps] update `@ljharb/eslint-config`, `@types/node`, `@types/semver`, `eslint` [`a66c7fc`](https://github.com/tbranyen/salita/commit/a66c7fce6f49692675aad752fa6a44deb109e4c6)
+- [Dev Deps] update `@types/node`, `auto-changelog`, `eslint` [`e2766e5`](https://github.com/tbranyen/salita/commit/e2766e5b1c4609df6ae4ed5b9e5b3478b9952d75)
+- [meta] finish the eslint upgrade [`12625d8`](https://github.com/tbranyen/salita/commit/12625d8c252794f67e68dc087ffb7cdc117b6d24)
+- [Deps] update `pargs` [`e7c8b30`](https://github.com/tbranyen/salita/commit/e7c8b3038015bf9f2b9170933b2ecefd94680dbf)
+
 ## [v2.0.0](https://github.com/tbranyen/salita/compare/v1.0.2...v2.0.0) - 2026-07-17
 
 ### Commits
@@ -164,13 +174,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Commits
 
 - [Fix] use `Boolean` objects as defaults, to distinguish when they’re passed or defaulted. [`14dd661`](https://github.com/tbranyen/salita/commit/14dd66112f46499dfc77b6c314fe69ab8b73fb07)
-- Revert "[Breaking] swap defaults of `--update` and `--dry-run`" [`1a44500`](https://github.com/tbranyen/salita/commit/1a44500e78d4d6f33424b38b9896c6c7f2f918bb)
-- Merge tag 'v0.9.3' [`2fbb819`](https://github.com/tbranyen/salita/commit/2fbb819821cafcc963aa6043950c842447d5f9ab)
 - [Dev Deps] update `eslint`, `@ljharb/eslint-config` [`a2c588d`](https://github.com/tbranyen/salita/commit/a2c588d704ade05a384d38c6142ac8952559efe1)
+- Revert "[Breaking] swap defaults of `--update` and `--dry-run`" [`1a44500`](https://github.com/tbranyen/salita/commit/1a44500e78d4d6f33424b38b9896c6c7f2f918bb)
 - [Deps] update `npm`, `args` [`ab0b2e7`](https://github.com/tbranyen/salita/commit/ab0b2e719b22048b740730826ee58e39d4168f00)
-- Merge tag 'v0.9.2' [`2bf8d53`](https://github.com/tbranyen/salita/commit/2bf8d536ca9869e4a233b30016941cf081d9818c)
 - [New] when changes won’t be persisted, advise the user. [`d135201`](https://github.com/tbranyen/salita/commit/d1352013f039e9c0a71d9ea5e93c3190135c0931)
 - [New] add `c` alias for `--check`; explicitly default it to `false`. [`aeae019`](https://github.com/tbranyen/salita/commit/aeae0199f34153c3725b67a87e329dd483332fd1)
+- Merge tag 'v0.9.3' [`2fbb819`](https://github.com/tbranyen/salita/commit/2fbb819821cafcc963aa6043950c842447d5f9ab)
+- Merge tag 'v0.9.2' [`2bf8d53`](https://github.com/tbranyen/salita/commit/2bf8d536ca9869e4a233b30016941cf081d9818c)
 
 ## [v0.9.3](https://github.com/tbranyen/salita/compare/v0.9.2...v0.9.3) - 2016-11-08
 
