@@ -68,8 +68,8 @@
 	"publishConfig": {
 		"ignore": [
 			".attw.json",
-			".eslintrc",
 			".github/workflows",
+			"eslint.config.mjs",
 			"test",
 			"tsconfig.json"
 		]
